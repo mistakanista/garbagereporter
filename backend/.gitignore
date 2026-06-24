@@ -1,0 +1,93 @@
+############################
+# Compiled class files
+############################
+*.class
+
+############################
+# Logs
+############################
+*.log
+logs/
+hs_err_pid*
+replay_pid*
+
+############################
+# Maven
+############################
+target/
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+.mvn/timing.properties
+
+############################
+# Gradle (falls später genutzt)
+############################
+.gradle/
+build/
+
+############################
+# IDE - IntelliJ
+############################
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+############################
+# IDE - VS Code
+############################
+.vscode/
+
+############################
+# Eclipse
+############################
+.project
+.classpath
+.settings/
+
+############################
+# Mac
+############################
+.DS_Store
+
+############################
+# Windows
+############################
+Thumbs.db
+
+############################
+# Spring Boot
+############################
+*.jar
+*.war
+*.ear
+
+############################
+# Environment files
+############################
+.env
+.env.*
+application-local.yml
+application-local.properties
+
+############################
+# Docker
+############################
+docker-compose.override.yml
+
+############################
+# Test Coverage
+############################
+coverage/
+jacoco.exec
+
+############################
+# Node (falls Frontend im gleichen Repo)
+############################
+node_modules/
+dist/

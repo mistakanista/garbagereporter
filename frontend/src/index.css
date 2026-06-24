@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Caveat:wght@700&display=swap');
+
+@layer base {
+  :root {
+    /* hanau.de inspired — sandy beige background, dark teal accent, brown ink */
+    --background: 40 35% 96%;
+    --foreground: 30 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 25% 15%;
+
+    --primary: 175 55% 25%;
+    --primary-foreground: 40 35% 97%;
+
+    --secondary: 40 30% 90%;
+    --secondary-foreground: 30 25% 15%;
+
+    --muted: 40 25% 92%;
+    --muted-foreground: 30 15% 40%;
+
+    --accent: 175 40% 92%;
+    --accent-foreground: 175 55% 22%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 90% 50%;
+    --success: 145 55% 35%;
+    --info: 210 70% 45%;
+
+    --border: 30 15% 82%;
+    --input: 30 15% 78%;
+    --ring: 175 55% 25%;
+
+    --radius: 0.25rem;
+
+    --shadow-sm: 0 1px 2px 0 hsl(30 25% 15% / 0.06);
+    --shadow-md: 0 2px 6px hsl(30 25% 15% / 0.08);
+    --shadow-lg: 0 4px 14px hsl(30 25% 15% / 0.12);
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Open Sans', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Open Sans', system-ui, sans-serif;
+    font-weight: 700;
+  }
+  .font-script {
+    font-family: 'Caveat', cursive;
+  }
+}
+
+html { scroll-behavior: smooth; }

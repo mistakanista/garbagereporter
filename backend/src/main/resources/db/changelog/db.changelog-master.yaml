@@ -1,0 +1,225 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-registration-table
+      author: gernotschulmeister
+      changes:
+        - createTable:
+            tableName: registration
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: company
+                  type: VARCHAR(255)
+
+              - column:
+                  name: accept_conditions
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: confirmed_registration
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: cancelled_participation
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_modified
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2-add-hash-column
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: registration
+            columns:
+              - column:
+                  name: hash
+                  type: VARCHAR(255)
+  - changeSet:
+      id: 3-change-token-column
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: registration
+            columns:
+              - column:
+                  name: confirmation_token
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+        - dropColumn:
+            tableName: registration
+            columns:
+              - column:
+                  name: hash
+  - changeSet:
+      id: 4-add-unregister-token
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: registration
+            columns:
+              - column:
+                  name: unregister_token
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+  - changeSet:
+      id: 5-create-sponsor-table
+      author: gernotschulmeister
+      changes:
+        - createTable:
+            tableName: sponsors
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: company
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: logo
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: level
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: sort
+                  type: DECIMAL
+
+  - changeSet:
+      id: 6-rename-sponsors-table
+      author: gernotschulmeister
+      changes:
+        - renameTable:
+            oldTableName: sponsors
+            newTableName: sponsor
+
+  - changeSet:
+      id: 7-create-topic-table
+      author: gernotschulmeister
+      changes:
+        - createTable:
+            tableName: topic
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: categories
+                  type: TEXT
+
+              - column:
+                  name: accepted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                      nullable: false
+
+              - column:
+                  name: likes
+                  type: DECIMAL
+
+              - column:
+                  name: created
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 8-add-link-column
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: sponsor
+            columns:
+              - column:
+                  name: link
+                  type: VARCHAR(255)

@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/barcamp
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  web:
+    resources:
+      static-locations: file:/app/uploads/
+  mvc:
+    static-path-pattern: /**
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure.liquibase: DEBUG
+    liquibase: DEBUG
