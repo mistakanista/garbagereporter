@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db:5432/barcamp
+    url: jdbc:postgresql://db:5432/garbagereporter
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   liquibase:
@@ -24,7 +24,7 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: 8070
 
 logging:
   level:

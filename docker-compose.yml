@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql
+
+  backend:
+    build: ./backend
+    environment:
+      - BASIC_AUTH_PW=${BASIC_AUTH_PW}
+    env_file:
+      - .env
+    ports:
+      - "8070:8070"
+    depends_on:
+      - db
+    volumes:
+      - app-data:/app/uploads
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+
+volumes:
+  app-data:
+    driver: local
+  pg_data:
+    driver: local

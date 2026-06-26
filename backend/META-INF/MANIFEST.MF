@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Created-By: Maven JAR Plugin 3.4.1
 Build-Jdk-Spec: 21
 Main-Class: org.springframework.boot.loader.launch.JarLauncher
-Start-Class: com.schulmeister.barcamp.BarcampApplication
+Start-Class: com.schulmeister.garbagereporter.GarbageReporterApplication
 Spring-Boot-Version: 4.0.1
 Spring-Boot-Classes: BOOT-INF/classes/
 Spring-Boot-Lib: BOOT-INF/lib/
