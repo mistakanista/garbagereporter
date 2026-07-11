@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Reports from "./pages/Reports";
 import MapPage from "./pages/MapPage";
 import NotFound from "./pages/NotFound";
+import TrashBin from "./pages/Trashbin";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/melden/:binId" element={<Report />} />
           <Route path="/meldungen" element={<Reports />} />
           <Route path="/karte" element={<MapPage />} />
+          <Route path="/eimer" element={<TrashBin />} />
           <Route path="/report/:binId" element={<Navigate to="/melden/1042" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
