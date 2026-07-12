@@ -36,6 +36,7 @@ public class TrashbinService {
         trashbin.setLocation(request.getLocation());
         trashbin.setStreet(request.getStreet());
         trashbin.setHouseNumber(request.getHouseNumber());
+        trashbin.setDistrict(request.getDistrict());
         trashbin.setZip(request.getZip());
         trashbin.setCity(request.getCity());
         trashbin.setLatitude(request.getLatitude());

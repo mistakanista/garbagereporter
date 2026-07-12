@@ -25,6 +25,9 @@ public class Trashbin {
     private String location;
 
     @Column(nullable = false)
+    private String district;
+
+    @Column(nullable = false)
     private String street;
 
     @Column(name = "house_number", nullable = false)

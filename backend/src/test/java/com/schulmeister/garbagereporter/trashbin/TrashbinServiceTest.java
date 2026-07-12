@@ -82,6 +82,7 @@ class TrashbinServiceTest {
                 .number(number)
                 .type("Mülleimer 80L")
                 .location("Gegenüber Penny")
+                .district("Wolfgang")
                 .street("Alfred-Nobel-Bogen")
                 .houseNumber("5")
                 .zip("63457")

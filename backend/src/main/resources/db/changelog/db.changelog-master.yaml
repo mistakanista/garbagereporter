@@ -117,3 +117,13 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 2-add-district-column
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: trashbin
+            columns:
+              - column:
+                  name: district
+                  type: VARCHAR(255)

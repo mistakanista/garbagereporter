@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,7 @@ export const AddTrashBin = () => {
     location: "",
     street: "",
     houseNumber: "",
+    district: "",
     zip: "",
     city: "",
     latitude: "",
@@ -46,6 +48,15 @@ export const AddTrashBin = () => {
       toast({
         title: "Fehlende Information",
         description: "Bitte Beschreibung des Orts angeben",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.district.trim()) {
+      toast({
+        title: "Fehlende Information",
+        description: "Bitte Stadteil auswählen",
         variant: "destructive",
       });
       return;
@@ -92,6 +103,7 @@ export const AddTrashBin = () => {
         location: formData.location,
         street: formData.street,
         houseNumber: formData.houseNumber,
+        district: formData.district,
         zip: formData.zip,
         city: formData.city,
         latitude: formData.latitude,
@@ -121,6 +133,7 @@ export const AddTrashBin = () => {
                             location: "",
                             street: "",
                             houseNumber: "",
+                            district: "",
                             zip: "",
                             city: "",
                             latitude: "",
@@ -223,6 +236,33 @@ export const AddTrashBin = () => {
                     onChange={(e) => setFormData({ ...formData, houseNumber: e.target.value })}
                     className="h-12"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="district" className="flex items-center gap-2">
+                    <Locate size={16} />
+                    Stadtteil *
+                  </Label>
+                  <Select
+                      value={formData.district}
+                      onValueChange={(value) => setFormData({ ...formData, district: value })}
+                    >
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Stadteil auswählen" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="Bahnhofsviertel">Bahnhofsviertel</SelectItem>
+                        <SelectItem value="Großauheim">Großauheim</SelectItem>
+                        <SelectItem value="Innenstadt">Innenstadt</SelectItem>
+                        <SelectItem value="Kesselstadt">Kesselstadt</SelectItem>
+                        <SelectItem value="Kleinauheim">Kleinauheim</SelectItem>
+                        <SelectItem value="Lamboy">Lamboy</SelectItem>
+                        <SelectItem value="Steinheim">Steinheim</SelectItem>
+                        <SelectItem value="Wilhelmsbad">Wilhelmsbad</SelectItem>
+                        <SelectItem value="Wolfgang">Wolfgang</SelectItem>
+                      </SelectContent>
+                    </Select>
                 </div>
 
 

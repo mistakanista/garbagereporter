@@ -20,6 +20,8 @@ public class TrashbinRequest {
 
     private String location;
 
+    private String district;
+
     private String street;
 
     private String houseNumber;
