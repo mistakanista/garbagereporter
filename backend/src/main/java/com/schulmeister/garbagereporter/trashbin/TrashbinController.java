@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,6 +39,13 @@ public class TrashbinController {
         Trashbin trashbin = trashbinService.findByNumber(number);
         log.info("Trashbin {}, {}", number, trashbin);
         return ResponseEntity.ok(trashbin);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<Trashbin>> findAll() {
+        List<Trashbin> trashBinList = trashbinService.findAll();
+        log.info("Trash bins: {}", trashBinList);
+        return ResponseEntity.ok(trashBinList);
     }
 
 

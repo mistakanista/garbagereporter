@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,5 +59,9 @@ public class TrashbinService {
     public Trashbin findByNumber(Long number) {
         Optional<Trashbin> trashbin = repository.findByNumber(number);
         return trashbin.orElse(null);
+    }
+
+    public List<Trashbin> findAll() {
+        return repository.findAll();
     }
 }

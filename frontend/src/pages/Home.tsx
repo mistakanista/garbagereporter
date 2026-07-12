@@ -1,9 +1,35 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import HanauLayout from "@/components/HanauLayout";
 import { BIN_DB } from "@/lib/reports";
 
 export default function Home() {
   const bins = Object.entries(BIN_DB);
+  const [message, setMessage] = useState<string>("");
+  const [bins1, setBins1] = useState([]);
+  const [binsFetched, setBinsFetched] = useState(false);
+  useEffect(() => {
+
+        const fetchBins = async () => {
+          try {
+            const res = await fetch(`/api/trashbin/list`);
+
+            const data = await res.json();
+            console.log("data", data);
+
+            setBins1(data);
+          } catch {
+            setMessage("Network error");
+          }
+        };
+        if (!binsFetched) {
+            fetchBins();
+            setBinsFetched(true);
+        }
+
+      }, [binsFetched], );
+    console.log("bins1", bins1)
+    console.log("bins", bins)
   return (
     <HanauLayout>
       <div className="max-w-6xl mx-auto px-6 py-10">
@@ -57,7 +83,24 @@ export default function Home() {
           <div className="px-5 py-3 border-b border-border bg-secondary font-semibold">
             Beispiel-Mülleimer (statt QR-Scan)
           </div>
+
           <ul className="divide-y divide-border">
+            {bins1.map((bin) => (
+                <li key={bin.id} className="px-5 py-4 flex items-center justify-between gap-4">
+                    <div>
+                      <div className="font-semibold">{bin.type} #{bin.number}</div>
+                      <div className="text-sm text-muted-foreground">
+                            {bin.location} <br /> {bin.district}, {bin.street} {bin.houseNumber}, {bin.zip} {bin.city}
+                      </div>
+                    </div>
+                    <Link
+                      to={`/melden/${bin.number}`}
+                      className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold hover:bg-primary/90"
+                    >
+                      Melden →
+                    </Link>
+                  </li>
+              ))}
             {bins.map(([id, b]) => (
               <li key={id} className="px-5 py-4 flex items-center justify-between gap-4">
                 <div>
