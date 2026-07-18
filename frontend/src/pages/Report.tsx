@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { toast } from "sonner";
 import HanauLayout from "@/components/HanauLayout";
-import { BIN_DB, reportsStore, IssueType } from "@/lib/reports";
+import { reportsStore, IssueType } from "@/lib/reports";
 
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((res, rej) => {
@@ -15,17 +15,40 @@ function fileToDataUrl(file: File): Promise<string> {
 
 export default function Report() {
   const { binId = "" } = useParams();
-  const bin = useMemo(
-    () =>
-      BIN_DB[binId] ?? {
-        location: "Unbekannter Standort",
-        district: "—",
-        type: "Mülleimer",
-        lat: 50.1336,
-        lng: 8.9166,
-      },
-    [binId],
-  );
+  const [message, setMessage] = useState<string>("");
+  const [bin, setBin] = useState({
+                                       number: "",
+                                       type: "",
+                                       location: "",
+                                       street: "",
+                                       houseNumber: "",
+                                       district: "",
+                                       zip: "",
+                                       city: "",
+                                       latitude: "",
+                                       longitude: "",
+                                     });
+  const [binFetched, setBinFetched] = useState(false);
+  useEffect(() => {
+
+          const fetchBins = async () => {
+            try {
+              const res = await fetch(`/api/trashbin/get/${binId}`);
+
+              const data = await res.json();
+              console.log("data", data);
+
+              setBin(data);
+            } catch {
+              setMessage("Network error");
+            }
+          };
+          if (!binFetched) {
+              fetchBins();
+              setBinFetched(true);
+          }
+
+        }, [binFetched, binId], );
 
   const [issue, setIssue] = useState<IssueType | "">("");
   const [comment, setComment] = useState("");
@@ -75,7 +98,7 @@ export default function Report() {
           <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             Erkannter Mülleimer (per QR-Code)
           </div>
-          <div className="text-xl font-bold">Mülleimer #{binId}</div>
+          <div className="text-xl font-bold">{bin.type} #{binId}</div>
           <dl className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div>
               <dt className="text-muted-foreground">Standort</dt>
@@ -86,8 +109,8 @@ export default function Report() {
               <dd className="font-semibold">{bin.district}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">Typ</dt>
-              <dd className="font-semibold">{bin.type}</dd>
+              <dt className="text-muted-foreground">Adresse</dt>
+              <dd className="font-semibold">{bin.street} {bin.houseNumber}<br />{bin.zip} {bin.city}</dd>
             </div>
           </dl>
         </div>
