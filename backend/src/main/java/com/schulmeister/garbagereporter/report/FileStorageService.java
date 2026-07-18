@@ -1,4 +1,4 @@
-package com.schulmeister.garbagereporter.trashbin;
+package com.schulmeister.garbagereporter.report;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.nio.file.StandardCopyOption;
 @Slf4j
 public class FileStorageService {
 
-    private final Path uploadPath = Paths.get("uploads/sponsors");
+    private final Path uploadPath = Paths.get("uploads/reports");
 
     public String store(MultipartFile file) {
 

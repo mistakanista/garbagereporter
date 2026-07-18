@@ -21,7 +21,7 @@ class TrashbinServiceTest {
     Long number = 2234L;
 
     @Test
-    void sponsorAdded() {
+    void trashBinAdded() {
 
         TrashbinRequest request = getTrashbinRequest();
 
@@ -40,7 +40,7 @@ class TrashbinServiceTest {
     }
 
     @Test
-    void duplicateSponsor() {
+    void duplicateTrashBin() {
 
         TrashbinRequest request = getTrashbinRequest();
 

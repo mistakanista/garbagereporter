@@ -127,3 +127,13 @@ databaseChangeLog:
               - column:
                   name: district
                   type: VARCHAR(255)
+  - changeSet:
+      id: 3-add-description-column
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: report
+            columns:
+              - column:
+                  name: description
+                  type: TEXT
