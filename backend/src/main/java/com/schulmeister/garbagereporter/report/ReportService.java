@@ -5,6 +5,7 @@ import com.schulmeister.garbagereporter.trashbin.TrashbinRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,9 @@ public class ReportService {
 
     public List<BinReport> findAll() {
         List<BinReport> binReportList = new ArrayList<>();
-        List<Report> reportList = repository.findAll();
+        List<Report> reportList = repository.findAll(
+            Sort.by(Sort.Direction.DESC, "created")
+        );
         List<Trashbin> trashbinList = trashbinRepository.findAll();
         for (Report report : reportList) {
             trashbinList.stream().filter(trashbin -> trashbin.getNumber().equals(report.getTrashbinId()))

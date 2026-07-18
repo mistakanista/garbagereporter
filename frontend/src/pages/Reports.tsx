@@ -37,11 +37,11 @@ export default function Reports() {
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
   const [issueFilter, setIssueFilter] = useState<"all" | "voll" | "beschaedigt">("all");
   const [districtFilter, setDistrictFilter] = useState<string>("all");
-  const [message, setMessage] = useState<string>("");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [message, setMessage] = useState<string>("");
   const [reports1, setReports1] = useState([]);
-    const [reportsFetched, setReportsFetched] = useState(false);
-    useEffect(() => {
+  const [reportsFetched, setReportsFetched] = useState(false);
+  useEffect(() => {
 
       const fetchBins = async () => {
         try {
@@ -60,7 +60,7 @@ export default function Reports() {
           setReportsFetched(true);
       }
 
-    }, [reportsFetched], );
+  }, [reportsFetched], );
 
   useEffect(() => {
     const unsub = reportsStore.subscribe(() => setReports(reportsStore.list()));

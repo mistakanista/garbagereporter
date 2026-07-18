@@ -23,10 +23,32 @@ export default function MapPage() {
   const [reports, setReports] = useState<Report[]>(() => reportsStore.list());
   const [params] = useSearchParams();
   const focusId = params.get("report");
-
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
+  const [message, setMessage] = useState<string>("");
+  const [reports1, setReports1] = useState([]);
+  const [reportsFetched, setReportsFetched] = useState(false);
+  useEffect(() => {
+
+    const fetchBins = async () => {
+      try {
+        const res = await fetch(`/api/report/list`);
+
+        const data = await res.json();
+        console.log("data", data);
+
+        setReports1(data);
+      } catch {
+        setMessage("Network error");
+      }
+    };
+    if (!reportsFetched) {
+        fetchBins();
+        setReportsFetched(true);
+    }
+
+  }, [reportsFetched], );
 
   useEffect(() => {
     const unsub = reportsStore.subscribe(() => setReports(reportsStore.list()));
@@ -56,27 +78,47 @@ export default function MapPage() {
       (r) => r.status !== "erledigt" && r.status !== "irrelevant",
     );
 
-    active.forEach((r) => {
-      const bin = BIN_DB[r.binId];
+    reports1.forEach((r) => {
+      const bin = r.trashbin;
       if (!bin) return;
-      const m = L.marker([bin.lat, bin.lng]).addTo(map);
+      const m = L.marker([bin.latitude, bin.longitude]).addTo(map);
       m.bindPopup(
         `<div style="font-family:system-ui;font-size:13px;min-width:180px">
-          <strong>Mülleimer #${r.binId}</strong><br/>
+          <strong>Mülleimer #${r.trashbin.number}</strong><br/>
           ${escapeHtml(bin.location)}<br/>
           <em>${escapeHtml(bin.district)}</em><br/>
           <hr style="margin:6px 0;border:0;border-top:1px solid #ddd"/>
-          ${ISSUE_LABEL[r.issue]} · ${STATUS_LABEL[r.status]}<br/>
-          <span style="color:#666">${new Date(r.createdAt).toLocaleString("de-DE")}</span>
-          ${r.photoDataUrl ? `<br/><img src="${r.photoDataUrl}" style="margin-top:6px;max-width:160px;border-radius:4px"/>` : ""}
-          ${r.comment ? `<br/><span style="font-style:italic">„${escapeHtml(r.comment)}"</span>` : ""}
+          ${ISSUE_LABEL[r.report.type]} · ${STATUS_LABEL[r.report.status]}<br/>
+          <span style="color:#666">${new Date(r.report.created).toLocaleString("de-DE")}</span>
+          ${r.report.image ? `<br/><img src="http://localhost:8010/reports/${r.report.image}" style="margin-top:6px;max-width:160px;border-radius:4px"/>` : ""}
+          ${r.report.description ? `<br/><span style="font-style:italic">„${escapeHtml(r.report.description)}"</span>` : ""}
         </div>`,
       );
-      markersRef.current[r.id] = m;
+      markersRef.current[r.report.id] = m;
     });
+
+    active.forEach((r) => {
+          const bin = BIN_DB[r.binId];
+          if (!bin) return;
+          const m = L.marker([bin.lat, bin.lng]).addTo(map);
+          m.bindPopup(
+            `<div style="font-family:system-ui;font-size:13px;min-width:180px">
+              <strong>Mülleimer #${r.binId}</strong><br/>
+              ${escapeHtml(bin.location)}<br/>
+              <em>${escapeHtml(bin.district)}</em><br/>
+              <hr style="margin:6px 0;border:0;border-top:1px solid #ddd"/>
+              ${ISSUE_LABEL[r.issue]} · ${STATUS_LABEL[r.status]}<br/>
+              <span style="color:#666">${new Date(r.createdAt).toLocaleString("de-DE")}</span>
+              ${r.photoDataUrl ? `<br/><img src="${r.photoDataUrl}" style="margin-top:6px;max-width:160px;border-radius:4px"/>` : ""}
+              ${r.comment ? `<br/><span style="font-style:italic">„${escapeHtml(r.comment)}"</span>` : ""}
+            </div>`,
+          );
+          markersRef.current[r.id] = m;
+        });
 
     // focus
     if (focusId && markersRef.current[focusId]) {
+        console.log("markersRef.current[focusId]", markersRef.current[focusId])
       const r = active.find((x) => x.id === focusId);
       if (r) {
         const bin = BIN_DB[r.binId];
@@ -85,8 +127,21 @@ export default function MapPage() {
           markersRef.current[focusId].openPopup();
         }
       }
+        const r1 = reports1.find((x) => {
+          return x.report.id == focusId;
+        });
+        console.log("r1", r1);
+        console.log("focus", focusId);
+        if (r1) {
+          const bin = r1.trashbin;
+          console.log("bin", bin);
+          if (bin) {
+            map.setView([bin.latitude, bin.longitude], 16, { animate: true });
+            markersRef.current[focusId].openPopup();
+          }
+        }
     }
-  }, [reports, focusId]);
+  }, [reports, reports1, focusId]);
 
   const active = reports.filter(
     (r) => r.status !== "erledigt" && r.status !== "irrelevant",
@@ -125,7 +180,22 @@ export default function MapPage() {
                   Keine aktiven Meldungen.
                 </li>
               )}
-              {active.map((r) => {
+              {reports1.map((r) => (
+                  <li key={r.id}>
+                      <Link
+                          to={`/karte?report=${r.report.id}`}
+                          className={`block px-4 py-3 text-sm hover:bg-muted ${focusId === r.report.id ? "bg-accent" : ""
+                              }`}
+                      >
+                          <div className="font-semibold">#{r.report.trashbinId} · {ISSUE_LABEL[r.report.type]}</div>
+                          <div className="text-xs text-muted-foreground">{r.trashbin.location}</div>
+                          <div className="text-xs text-muted-foreground">
+                              {STATUS_LABEL[r.report.status]} · {new Date(r.report.created).toLocaleDateString("de-DE")}
+                          </div>
+                      </Link>
+                  </li>
+              ))}
+          {active.map((r) => {
                 const bin = BIN_DB[r.binId];
                 return (
                   <li key={r.id}>
