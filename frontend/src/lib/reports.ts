@@ -1,7 +1,7 @@
 // Shared report store backed by localStorage.
 
-export type ReportStatus = "neu" | "bestaetigt" | "geplant" | "erledigt" | "irrelevant";
-export type IssueType = "voll" | "beschaedigt";
+export type ReportStatus = "new" | "neu" | "bestaetigt" | "geplant" | "erledigt" | "irrelevant";
+export type IssueType = "voll" | "beschaedigt" | "illegal" | "beschmiert";
 
 export interface BinInfo {
   location: string;
@@ -156,6 +156,7 @@ export const reportsStore = {
 };
 
 export const STATUS_LABEL: Record<ReportStatus, string> = {
+  new: "Neu",
   neu: "Neu",
   bestaetigt: "Bestätigt",
   geplant: "Geplant",
@@ -166,4 +167,6 @@ export const STATUS_LABEL: Record<ReportStatus, string> = {
 export const ISSUE_LABEL: Record<IssueType, string> = {
   voll: "Voll / überfüllt",
   beschaedigt: "Beschädigt",
+  illegal: "Illegale Ablagerungen",
+  beschmiert: "Beschmiert / Graffitti",
 };

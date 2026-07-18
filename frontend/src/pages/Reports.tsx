@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 
 const STATUS_COLORS: Record<ReportStatus, string> = {
+  new: "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] border-[hsl(var(--info))]/30",
   neu: "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] border-[hsl(var(--info))]/30",
   bestaetigt: "bg-accent text-accent-foreground border-primary/30",
   geplant: "bg-[hsl(var(--warning))]/15 text-[hsl(38_90%_30%)] border-[hsl(var(--warning))]/40",
@@ -36,7 +37,30 @@ export default function Reports() {
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
   const [issueFilter, setIssueFilter] = useState<"all" | "voll" | "beschaedigt">("all");
   const [districtFilter, setDistrictFilter] = useState<string>("all");
+  const [message, setMessage] = useState<string>("");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [reports1, setReports1] = useState([]);
+    const [reportsFetched, setReportsFetched] = useState(false);
+    useEffect(() => {
+
+      const fetchBins = async () => {
+        try {
+          const res = await fetch(`/api/report/list`);
+
+          const data = await res.json();
+          console.log("data", data);
+
+          setReports1(data);
+        } catch {
+          setMessage("Network error");
+        }
+      };
+      if (!reportsFetched) {
+          fetchBins();
+          setReportsFetched(true);
+      }
+
+    }, [reportsFetched], );
 
   useEffect(() => {
     const unsub = reportsStore.subscribe(() => setReports(reportsStore.list()));
@@ -180,6 +204,74 @@ export default function Reports() {
                     </td>
                   </tr>
                 )}
+                {reports1.map((item) => (
+                <tr key={item.report.id} className="hover:bg-muted/40 align-top">
+                  <td className="px-4 py-3">
+                    {item.report.image ? (
+                      <a href={`http://localhost:8010/reports/${item.report.image}`} target="_blank" rel="noreferrer">
+                        <img
+                          src={`http://localhost:8010/reports/${item.report.image}`}
+                          alt={item.trashbin.location ?? "Foto"}
+                          className="w-16 h-16 object-cover rounded border border-border"
+                        />
+                      </a>
+                    ) : (
+                      <div className="w-16 h-16 rounded border border-dashed border-border bg-muted/40 flex items-center justify-center text-[10px] text-muted-foreground text-center px-1">
+                        Kein Foto
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 font-semibold whitespace-nowrap">#{item.report.trashbinId}</td>
+                  <td className="px-4 py-3">
+                    <div>{item.trashbin.location ?? "—"}</div>
+                    <div className="text-xs text-muted-foreground">{item.trashbin.district}</div>
+                    <div className="text-xs text-muted-foreground">{item.trashbin.street} {item.trashbin.houseNumber}</div>
+                    <div className="text-xs text-muted-foreground">{item.trashbin.zip} {item.trashbin.city}</div>
+                  </td>
+
+                  <td className="px-4 py-3">
+                    {ISSUE_LABEL[item.report.type]}
+                    {item.report.description && (
+                      <div className="text-xs italic text-muted-foreground mt-1 max-w-xs">
+                        „{item.report.description}"
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+                    {fmtDate(item.report.created)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-block px-2 py-1 rounded text-xs font-semibold border ${STATUS_COLORS[item.report.status]}`}
+                    >
+                      {STATUS_LABEL[item.report.status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1 justify-end">
+                      <ActionBtn onClick={() => setStatus(item, "bestaetigt")} label="Bestätigen" />
+                      <ActionBtn onClick={() => setStatus(item, "geplant")} label="Planen" />
+                      <ActionBtn
+                        onClick={() => setStatus(item, "erledigt")}
+                        label="Erledigt"
+                        variant="success"
+                      />
+                      <ActionBtn
+                        onClick={() => setStatus(item, "irrelevant")}
+                        label="Irrelevant"
+                        variant="muted"
+                      />
+                      <Link
+                        to={`/karte?report=${item.report.id}`}
+                        className="px-2 py-1 text-xs rounded border border-input hover:bg-muted"
+                      >
+                        Karte
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+                ))}
+
                 {visible.map((r) => {
                   const bin = BIN_DB[r.binId];
                   return (

@@ -52,7 +52,7 @@ export const LogoUpload = ({ formData, setFormData }) => {
       {formData.image && (
         <img
           src={`http://localhost:8010/reports/${formData.image}`}
-          className="h-16 mt-2 object-contain"
+          className="mt-2 object-contain"
         />
       )}
     </div>

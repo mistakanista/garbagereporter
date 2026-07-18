@@ -1,5 +1,6 @@
 package com.schulmeister.garbagereporter.report;
 
+import com.schulmeister.garbagereporter.trashbin.Trashbin;
 import com.schulmeister.garbagereporter.trashbin.TrashbinRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +62,20 @@ public class ReportService {
         return report.orElse(null);
     }
 
-    public List<Report> findAll() {
-        return repository.findAll();
+    public List<BinReport> findAll() {
+        List<BinReport> binReportList = new ArrayList<>();
+        List<Report> reportList = repository.findAll();
+        List<Trashbin> trashbinList = trashbinRepository.findAll();
+        for (Report report : reportList) {
+            trashbinList.stream().filter(trashbin -> trashbin.getNumber().equals(report.getTrashbinId()))
+                    .findFirst()
+                    .ifPresent(trashbin -> {
+                        BinReport binReport = new BinReport();
+                        binReport.setReport(report);
+                        binReport.setTrashbin(trashbin);
+                        binReportList.add(binReport);
+                    });
+        }
+        return binReportList;
     }
 }

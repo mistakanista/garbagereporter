@@ -8,25 +8,24 @@ export default function Home() {
   const [binsFetched, setBinsFetched] = useState(false);
   useEffect(() => {
 
-        const fetchBins = async () => {
-          try {
-            const res = await fetch(`/api/trashbin/list`);
+    const fetchBins = async () => {
+      try {
+        const res = await fetch(`/api/trashbin/list`);
 
-            const data = await res.json();
-            console.log("data", data);
+        const data = await res.json();
+        console.log("data", data);
 
-            setBins(data);
-          } catch {
-            setMessage("Network error");
-          }
-        };
-        if (!binsFetched) {
-            fetchBins();
-            setBinsFetched(true);
-        }
+        setBins(data);
+      } catch {
+        setMessage("Network error");
+      }
+    };
+    if (!binsFetched) {
+        fetchBins();
+        setBinsFetched(true);
+    }
 
-      }, [binsFetched], );
-    console.log("bins1", bins)
+  }, [binsFetched], );
   return (
     <HanauLayout>
       <div className="max-w-6xl mx-auto px-6 py-10">
