@@ -1,8 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import { useParams, Link } from "react-router-dom";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import HanauLayout from "@/components/HanauLayout";
 import { reportsStore, IssueType } from "@/lib/reports";
+import { LogoUpload } from "@/components/sections/LogoUpload";
+import { CheckCircle } from "lucide-react";
 
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((res, rej) => {
@@ -15,6 +19,7 @@ function fileToDataUrl(file: File): Promise<string> {
 
 export default function Report() {
   const { binId = "" } = useParams();
+  const { toast } = useToast();
   const [message, setMessage] = useState<string>("");
   const [bin, setBin] = useState({
                                        number: "",
@@ -29,6 +34,12 @@ export default function Report() {
                                        longitude: "",
                                      });
   const [binFetched, setBinFetched] = useState(false);
+  const [formData, setFormData] = useState({
+      trashbinId: "",
+      type: "",
+      image: "",
+      description: "",
+    });
   useEffect(() => {
 
           const fetchBins = async () => {
@@ -54,6 +65,7 @@ export default function Report() {
   const [comment, setComment] = useState("");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -65,24 +77,65 @@ export default function Report() {
     setPhotoPreview(dataUrl);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!issue) {
-      toast.error("Bitte wählen Sie das Problem aus.");
-      return;
+    if (!formData.type) {
+        toast({
+          title: "Information fehlt",
+          description: "Bitte wählen Sie ein Problem aus",
+          variant: "destructive",
+        });
+        return;
     }
     if (comment.length > 500) {
-      toast.error("Kommentar zu lang (max. 500 Zeichen).");
+      toast({
+        title: "Zeichen Limit",
+        description: "Kommentar zu lang (max. 500 Zeichen).",
+        variant: "destructive",
+      });
       return;
     }
-    reportsStore.add({
-      binId,
-      issue,
-      comment: comment.trim(),
-      photoDataUrl: photoPreview ?? undefined,
+
+    setIsSubmitting(true);
+
+    const response = await fetch("/api/report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+          trashbinId: binId,
+          type: formData.type,
+        image: formData.image,
+        description: formData.description,
+      }),
     });
+    console.log("resp", response);
+    if (response.status === 412) {
+      toast({
+        title: "Mülleimer nicht vorhanden",
+        description: "Kein Eimer mit dieser Nummer ist registriert",
+        variant: "destructive",
+      });
+    } else if (response.status >= 400) {
+      toast({
+        title: "Fehler beim Hinzufügen der Meldung",
+        description: "Beim Hinzufügen der Meldung ist ein Fehler aufgetreten",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Meldung erfolgreich hinzugefügt! ☕",
+        description: "Unsere Mitarbeiter werden sich darum kümmern!",
+      });
+      setFormData({trashbinId: "",
+                          type: "",
+                          image: "",
+                          description: "", });
+    }
+
+    setIsSubmitting(false);
     setSubmitted(true);
-    toast.success("Meldung erfolgreich übermittelt. Vielen Dank!");
   };
 
   return (
@@ -147,48 +200,37 @@ export default function Report() {
                 <label htmlFor="issue" className="block text-sm font-semibold mb-2">
                   Was ist das Problem? <span className="text-primary">*</span>
                 </label>
-                <select
-                  id="issue"
-                  value={issue}
-                  onChange={(e) => setIssue(e.target.value as IssueType)}
-                  className="w-full h-11 px-3 border border-input rounded bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                  required
+                <Select
+                  value={formData.type}
+                  onValueChange={(value) => setFormData({ ...formData, type: value })}
                 >
-                  <option value="">— Bitte wählen —</option>
-                  <option value="voll">Mülleimer ist voll / überfüllt</option>
-                  <option value="beschaedigt">Mülleimer ist beschädigt</option>
-                </select>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Bitte wählen" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value="voll">Mülleimer ist voll / überfüllt</SelectItem>
+                    <SelectItem value="beschaedigt">Mülleimer ist beschädigt</SelectItem>
+                    <SelectItem value="illegal">Illegale Ablagerungen in der Nähe</SelectItem>
+                    <SelectItem value="beschmiert">Mülleimer ist beschmiert / Graffitti</SelectItem>
+                    <SelectItem value="sonstiges">Sonstiges</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label htmlFor="photo" className="block text-sm font-semibold mb-2">
-                  Foto hochladen (optional)
-                </label>
-                <input
-                  id="photo"
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handlePhoto}
-                  className="block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary file:text-primary-foreground file:font-semibold hover:file:bg-primary/90"
-                />
-                {photoPreview && (
-                  <img
-                    src={photoPreview}
-                    alt="Vorschau"
-                    className="mt-3 max-h-48 rounded border border-border"
-                  />
-                )}
+                <LogoUpload formData={formData} setFormData={setFormData} />
               </div>
 
               <div>
-                <label htmlFor="comment" className="block text-sm font-semibold mb-2">
+                <label htmlFor="description" className="block text-sm font-semibold mb-2">
                   Kommentar (optional)
                 </label>
                 <textarea
-                  id="comment"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  id="description"
+                  value={formData.description}
+
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
                   maxLength={500}
                   placeholder="Weitere Details, z. B. seit wann der Mülleimer überfüllt ist."
@@ -205,12 +247,23 @@ export default function Report() {
               >
                 Abbrechen
               </Link>
-              <button
+
+              <Button
                 type="submit"
+                variant="hero"
+                size="lg"
                 className="px-5 py-2.5 bg-primary text-primary-foreground rounded text-sm font-semibold hover:bg-primary/90"
+                disabled={isSubmitting}
               >
-                Meldung absenden
-              </button>
+                {isSubmitting ? (
+                  <>Processing...</>
+                ) : (
+                  <>
+                    <CheckCircle size={18} />
+                    Meldung absenden
+                  </>
+                )}
+              </Button>
             </div>
           </form>
         )}
