@@ -1,6 +1,6 @@
 // Shared report store backed by localStorage.
 
-export type ReportStatus = "new" | "neu" | "bestaetigt" | "confirmed" | "geplant" | "erledigt" | "irrelevant" | "obsolete";
+export type ReportStatus = "new" | "confirmed" | "planned" | "done" | "obsolete";
 export type IssueType = "voll" | "beschaedigt" | "illegal" | "beschmiert";
 
 export interface BinInfo {
@@ -15,7 +15,7 @@ export interface BinInfo {
 export const BIN_DB: Record<string, BinInfo> = {
   "1042": {
     location: "Marktplatz, vor dem Rathaus",
-    district: "Hanau Innenstadt",
+    district: "Innenstadt",
     type: "Straßenpapierkorb 80L",
     lat: 50.1336,
     lng: 8.9166,
@@ -29,7 +29,7 @@ export const BIN_DB: Record<string, BinInfo> = {
   },
   "3311": {
     location: "Freiheitsplatz / Forum",
-    district: "Hanau Innenstadt",
+    district: "Innenstadt",
     type: "Straßenpapierkorb 120L",
     lat: 50.1352,
     lng: 8.9198,
@@ -55,6 +55,34 @@ export const BIN_DB: Record<string, BinInfo> = {
     lat: 50.1158,
     lng: 8.9259,
   },
+  "6005": {
+      location: "Mainufer, Steinheimer Brücke",
+      district: "Großauheim",
+      type: "Straßenpapierkorb 80L",
+      lat: 50.1158,
+      lng: 8.9259,
+    },
+    "6006": {
+          location: "Mainufer, Steinheimer Brücke",
+          district: "Kleinauheim",
+          type: "Straßenpapierkorb 80L",
+          lat: 50.1158,
+          lng: 8.9259,
+        },
+    "6007": {
+              location: "Mainufer, Steinheimer Brücke",
+              district: "Lamboy",
+              type: "Straßenpapierkorb 80L",
+              lat: 50.1158,
+              lng: 8.9259,
+            },
+    "6009": {
+              location: "Mainufer, Steinheimer Brücke",
+              district: "Wolfgang",
+              type: "Straßenpapierkorb 80L",
+              lat: 50.1158,
+              lng: 8.9259,
+            },
 };
 
 export interface Report {
@@ -93,7 +121,7 @@ function seed(): Report[] {
       issue: "voll",
       comment: "Überquillt seit dem Wochenmarkt.",
       createdAt: now - 1000 * 60 * 60 * 2,
-      status: "neu",
+      status: "new",
     },
     {
       id: "r-2",
@@ -101,7 +129,7 @@ function seed(): Report[] {
       issue: "beschaedigt",
       comment: "Deckel abgerissen, Klappe fehlt.",
       createdAt: now - 1000 * 60 * 60 * 26,
-      status: "bestaetigt",
+      status: "confirmed",
     },
     {
       id: "r-3",
@@ -109,7 +137,7 @@ function seed(): Report[] {
       issue: "voll",
       comment: "",
       createdAt: now - 1000 * 60 * 60 * 50,
-      status: "geplant",
+      status: "planned",
     },
     {
       id: "r-4",
@@ -117,7 +145,7 @@ function seed(): Report[] {
       issue: "beschaedigt",
       comment: "Vandalismus, Graffiti.",
       createdAt: now - 1000 * 60 * 60 * 80,
-      status: "neu",
+      status: "new",
     },
   ];
   localStorage.setItem(KEY, JSON.stringify(sample));
@@ -133,7 +161,7 @@ export const reportsStore = {
       ...r,
       id: `r-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       createdAt: Date.now(),
-      status: "neu",
+      status: "new",
     };
     const all = read();
     all.push(newR);
@@ -157,12 +185,9 @@ export const reportsStore = {
 
 export const STATUS_LABEL: Record<ReportStatus, string> = {
   new: "Neu",
-  neu: "Neu",
-  bestaetigt: "Bestätigt",
   confirmed: "Bestätigt",
-  geplant: "Geplant",
-  erledigt: "Erledigt",
-  irrelevant: "Irrelevant",
+  planned: "Geplant",
+  done: "Erledigt",
   obsolete: "Irrelevant",
 };
 

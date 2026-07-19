@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { FileArchive, Building2, CheckCircle, Hash, FileType, Locate, MapPin, Road, House } from "lucide-react";
+import {
+  BIN_DB,
+} from "@/lib/reports";
 
 export const AddTrashBin = () => {
   const { toast } = useToast();
@@ -22,6 +25,11 @@ export const AddTrashBin = () => {
     latitude: "",
     longitude: "",
   });
+
+  const districts = useMemo(
+      () => Array.from(new Set(Object.values(BIN_DB).map((b) => b.district))).sort(),
+      [],
+    );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,15 +260,9 @@ export const AddTrashBin = () => {
                       </SelectTrigger>
 
                       <SelectContent>
-                        <SelectItem value="Bahnhofsviertel">Bahnhofsviertel</SelectItem>
-                        <SelectItem value="Großauheim">Großauheim</SelectItem>
-                        <SelectItem value="Innenstadt">Innenstadt</SelectItem>
-                        <SelectItem value="Kesselstadt">Kesselstadt</SelectItem>
-                        <SelectItem value="Kleinauheim">Kleinauheim</SelectItem>
-                        <SelectItem value="Lamboy">Lamboy</SelectItem>
-                        <SelectItem value="Steinheim">Steinheim</SelectItem>
-                        <SelectItem value="Wilhelmsbad">Wilhelmsbad</SelectItem>
-                        <SelectItem value="Wolfgang">Wolfgang</SelectItem>
+                        {districts.map((d) => (
+                                        <SelectItem key={d} value={d}>{d}</SelectItem>
+                                      ))}
                       </SelectContent>
                     </Select>
                 </div>
