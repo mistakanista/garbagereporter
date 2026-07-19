@@ -1,6 +1,6 @@
 // Shared report store backed by localStorage.
 
-export type ReportStatus = "new" | "neu" | "bestaetigt" | "geplant" | "erledigt" | "irrelevant";
+export type ReportStatus = "new" | "neu" | "bestaetigt" | "confirmed" | "geplant" | "erledigt" | "irrelevant" | "obsolete";
 export type IssueType = "voll" | "beschaedigt" | "illegal" | "beschmiert";
 
 export interface BinInfo {
@@ -159,9 +159,11 @@ export const STATUS_LABEL: Record<ReportStatus, string> = {
   new: "Neu",
   neu: "Neu",
   bestaetigt: "Bestätigt",
+  confirmed: "Bestätigt",
   geplant: "Geplant",
   erledigt: "Erledigt",
   irrelevant: "Irrelevant",
+  obsolete: "Irrelevant",
 };
 
 export const ISSUE_LABEL: Record<IssueType, string> = {

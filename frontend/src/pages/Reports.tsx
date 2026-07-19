@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import HanauLayout from "@/components/HanauLayout";
 import {
   BIN_DB,
@@ -9,15 +11,16 @@ import {
   STATUS_LABEL,
   reportsStore,
 } from "@/lib/reports";
-import { toast } from "sonner";
 
 const STATUS_COLORS: Record<ReportStatus, string> = {
   new: "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] border-[hsl(var(--info))]/30",
   neu: "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] border-[hsl(var(--info))]/30",
   bestaetigt: "bg-accent text-accent-foreground border-primary/30",
+  confirmed: "bg-accent text-accent-foreground border-primary/30",
   geplant: "bg-[hsl(var(--warning))]/15 text-[hsl(38_90%_30%)] border-[hsl(var(--warning))]/40",
   erledigt: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] border-[hsl(var(--success))]/30",
   irrelevant: "bg-muted text-muted-foreground border-border",
+  obsolete: "bg-muted text-muted-foreground border-border",
 };
 
 function fmtDate(ts: number) {
@@ -30,9 +33,17 @@ function fmtDate(ts: number) {
   });
 }
 
+interface BinReport {
+    report: {
+        id: number;
+        status: string;
+    }
+}
+
 type SortDir = "desc" | "asc";
 
 export default function Reports() {
+  const { toast } = useToast();
   const [reports, setReports] = useState<Report[]>(() => reportsStore.list());
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
   const [issueFilter, setIssueFilter] = useState<"all" | "voll" | "beschaedigt">("all");
@@ -41,6 +52,9 @@ export default function Reports() {
   const [message, setMessage] = useState<string>("");
   const [reports1, setReports1] = useState([]);
   const [reportsFetched, setReportsFetched] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reportUpdateRequest, setReportUpdateRequest] = useState({ id: "", status: "" });
+
   useEffect(() => {
 
       const fetchBins = async () => {
@@ -92,8 +106,63 @@ export default function Reports() {
 
   const setStatus = (r: Report, s: ReportStatus) => {
     reportsStore.setStatus(r.id, s);
-    toast.success(`Meldung als "${STATUS_LABEL[s]}" markiert.`);
+    toast({
+          title: "Erfolg",
+          description: `Meldung als "${STATUS_LABEL[s]}" markiert.`,
+
+      });
+
   };
+
+  const setObsolete = (binReport: BinReport)=> {
+      handleSubmit(binReport.report.id, "obsolete");
+  }
+
+  const setConfirmed = (binReport: BinReport)=> {
+        handleSubmit(binReport.report.id, "confirmed");
+  }
+
+  const handleSubmit = async (id: number, status: string) => {
+
+          console.log("statusUpdate", status);
+      if (!status.trim() || !id) {
+              toast({
+                  title: "Fehler",
+                  description: "Kein Status oder keine Id vorhanden",
+                  variant: "destructive",
+              });
+              return;
+          }
+
+          setIsSubmitting(true);
+
+          const response = await fetch("/api/report/update", {
+              method: "PUT",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  id: id,
+                  status: status,
+              }),
+          });
+
+          if (response.status === 400) {
+              toast({
+                  title: "Status Aktualisierung Fehler",
+                  description: "Ein Fehler ist bei der Aktualisierung des Status der Meldung aufgetreten",
+                  variant: "destructive",
+              });
+          } else {
+              toast({
+                  title: "Status aktualisiert! 🎉",
+                  description: "Der Status der Meldung wurde erfolgreich aktualisiert",
+              });
+          }
+
+          setIsSubmitting(false);
+          setReportsFetched(false);
+      };
 
   return (
     <HanauLayout breadcrumb="Meldungen">
@@ -249,18 +318,28 @@ export default function Reports() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1 justify-end">
-                      <ActionBtn onClick={() => setStatus(item, "bestaetigt")} label="Bestätigen" />
+
+                    <Button type="button" onClick={() => setConfirmed(item)} className="border border-input px-2 py-0 m-0" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                          <>Submitting...</>
+                      ) : ("Bestätigen")}
+                      </Button>
                       <ActionBtn onClick={() => setStatus(item, "geplant")} label="Planen" />
                       <ActionBtn
                         onClick={() => setStatus(item, "erledigt")}
                         label="Erledigt"
                         variant="success"
                       />
-                      <ActionBtn
-                        onClick={() => setStatus(item, "irrelevant")}
-                        label="Irrelevant"
-                        variant="muted"
-                      />
+
+                      <Button type="button" onClick={() => setObsolete(item)} className="border border-input px-2 py-0 m-0 bg-muted" disabled={isSubmitting}>
+                          {isSubmitting ? (
+                              <>Submitting...</>
+                          ) : (
+                              <>
+                                  Irrelevant
+                              </>
+                          )}
+                      </Button>
                       <Link
                         to={`/karte?report=${item.report.id}`}
                         className="px-2 py-1 text-xs rounded border border-input hover:bg-muted"
