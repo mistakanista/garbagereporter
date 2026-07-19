@@ -48,4 +48,9 @@ public class ReportController {
         return ResponseEntity.ok(binReportList);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody @Valid ReportStatusUpdateRequest request) {
+        return reportService.updateStatus(request);
+    }
+
 }

@@ -25,6 +25,8 @@ public class ReportService {
     public static final String ERROR_SAVING_REPORT = "Error saving report: ";
     public static final String STATUS_NEW = "new";
     public static final String BIN_ABSENT = "Trash bin does not exist ";
+    public static final String REPORT_NOT_FOUND = "Report could not be found with id: ";
+    public static final String STATUS_UPDATED = "Status updated successfully for : ";
 
     private ReportRepository repository;
     private TrashbinRepository trashbinRepository;
@@ -80,5 +82,26 @@ public class ReportService {
                     });
         }
         return binReportList;
+    }
+
+    public ResponseEntity<String> updateStatus(@Valid ReportStatusUpdateRequest request) {
+        String response = REPORT_NOT_FOUND + request.getId();
+        Optional<Report> reportOptional = repository.findById(request.getId());
+        if (reportOptional.isPresent()) {
+            Report report = reportOptional.get();
+            report.setStatus(request.getStatus());
+            report.setLastModified(LocalDateTime.now());
+            try {
+                response = STATUS_UPDATED + report.getTrashbinId() + " Status: " + request.getStatus();
+                repository.save(report);
+            } catch (Exception e) {
+                response = ERROR_SAVING_REPORT + report.getTrashbinId();
+                log.error(response + " {}", e.getMessage());
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
