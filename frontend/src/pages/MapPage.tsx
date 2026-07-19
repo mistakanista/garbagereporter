@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import HanauLayout from "@/components/HanauLayout";
-import { BIN_DB, ISSUE_LABEL, Report, STATUS_LABEL, reportsStore } from "@/lib/reports";
+import { ISSUE_LABEL, Report, STATUS_LABEL, reportsStore } from "@/lib/reports";
 
 // Fix leaflet default marker icon paths (bundler can't resolve them automatically).
 const DefaultIcon = L.icon({
@@ -20,14 +20,13 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const HANAU_CENTER: [number, number] = [50.1336, 8.9166];
 
 export default function MapPage() {
-  const [reports, setReports] = useState<Report[]>(() => reportsStore.list());
   const [params] = useSearchParams();
   const focusId = params.get("report");
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
   const [message, setMessage] = useState<string>("");
-  const [reports1, setReports1] = useState([]);
+  const [reports, setReports] = useState([]);
   const [reportsFetched, setReportsFetched] = useState(false);
   useEffect(() => {
 
@@ -38,7 +37,7 @@ export default function MapPage() {
         const data = await res.json();
         console.log("data", data);
 
-        setReports1(data);
+        setReports(data);
       } catch {
         setMessage("Network error");
       }
@@ -49,11 +48,6 @@ export default function MapPage() {
     }
 
   }, [reportsFetched], );
-
-  useEffect(() => {
-    const unsub = reportsStore.subscribe(() => setReports(reportsStore.list()));
-    return unsub;
-  }, []);
 
   // init map once
   useEffect(() => {
@@ -66,6 +60,9 @@ export default function MapPage() {
     mapRef.current = map;
   }, []);
 
+  const active = reports.filter(
+        (r) => r.status !== "erledigt" && r.status !== "irrelevant",
+  );
   // sync markers with reports
   useEffect(() => {
     const map = mapRef.current;
@@ -74,11 +71,7 @@ export default function MapPage() {
     Object.values(markersRef.current).forEach((m) => m.remove());
     markersRef.current = {};
 
-    const active = reports.filter(
-      (r) => r.status !== "erledigt" && r.status !== "irrelevant",
-    );
-
-    reports1.forEach((r) => {
+    active.forEach((r) => {
       const bin = r.trashbin;
       if (!bin) return;
       const m = L.marker([bin.latitude, bin.longitude]).addTo(map);
@@ -97,37 +90,9 @@ export default function MapPage() {
       markersRef.current[r.report.id] = m;
     });
 
-    active.forEach((r) => {
-          const bin = BIN_DB[r.binId];
-          if (!bin) return;
-          const m = L.marker([bin.lat, bin.lng]).addTo(map);
-          m.bindPopup(
-            `<div style="font-family:system-ui;font-size:13px;min-width:180px">
-              <strong>Mülleimer #${r.binId}</strong><br/>
-              ${escapeHtml(bin.location)}<br/>
-              <em>${escapeHtml(bin.district)}</em><br/>
-              <hr style="margin:6px 0;border:0;border-top:1px solid #ddd"/>
-              ${ISSUE_LABEL[r.issue]} · ${STATUS_LABEL[r.status]}<br/>
-              <span style="color:#666">${new Date(r.createdAt).toLocaleString("de-DE")}</span>
-              ${r.photoDataUrl ? `<br/><img src="${r.photoDataUrl}" style="margin-top:6px;max-width:160px;border-radius:4px"/>` : ""}
-              ${r.comment ? `<br/><span style="font-style:italic">„${escapeHtml(r.comment)}"</span>` : ""}
-            </div>`,
-          );
-          markersRef.current[r.id] = m;
-        });
-
     // focus
     if (focusId && markersRef.current[focusId]) {
-        console.log("markersRef.current[focusId]", markersRef.current[focusId])
-      const r = active.find((x) => x.id === focusId);
-      if (r) {
-        const bin = BIN_DB[r.binId];
-        if (bin) {
-          map.setView([bin.lat, bin.lng], 16, { animate: true });
-          markersRef.current[focusId].openPopup();
-        }
-      }
-        const r1 = reports1.find((x) => {
+        const r1 = reports.find((x) => {
           return x.report.id == focusId;
         });
         console.log("r1", r1);
@@ -141,11 +106,7 @@ export default function MapPage() {
           }
         }
     }
-  }, [reports, reports1, focusId]);
-
-  const active = reports.filter(
-    (r) => r.status !== "erledigt" && r.status !== "irrelevant",
-  );
+  }, [active, reports, focusId]);
 
   return (
     <HanauLayout breadcrumb="Karte">
@@ -154,7 +115,7 @@ export default function MapPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-1">Karte der Meldungen</h1>
             <p className="text-muted-foreground">
-              {active.length} aktive Meldung{active.length === 1 ? "" : "en"} in Hanau.
+              {reports.length} aktive Meldung{reports.length === 1 ? "" : "en"} in Hanau.
             </p>
           </div>
           <Link
@@ -180,7 +141,7 @@ export default function MapPage() {
                   Keine aktiven Meldungen.
                 </li>
               )}
-              {reports1.map((r) => (
+              {reports.map((r) => (
                   <li key={r.id}>
                       <Link
                           to={`/karte?report=${r.report.id}`}
@@ -195,25 +156,6 @@ export default function MapPage() {
                       </Link>
                   </li>
               ))}
-          {active.map((r) => {
-                const bin = BIN_DB[r.binId];
-                return (
-                  <li key={r.id}>
-                    <Link
-                      to={`/karte?report=${r.id}`}
-                      className={`block px-4 py-3 text-sm hover:bg-muted ${
-                        focusId === r.id ? "bg-accent" : ""
-                      }`}
-                    >
-                      <div className="font-semibold">#{r.binId} · {ISSUE_LABEL[r.issue]}</div>
-                      <div className="text-xs text-muted-foreground">{bin?.location}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {STATUS_LABEL[r.status]} · {new Date(r.createdAt).toLocaleDateString("de-DE")}
-                      </div>
-                    </Link>
-                  </li>
-                );
-              })}
             </ul>
           </aside>
         </div>

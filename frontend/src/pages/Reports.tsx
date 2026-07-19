@@ -102,7 +102,7 @@ export default function Reports() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-1">Meldungen</h1>
             <p className="text-muted-foreground">
-              {visible.length} aktive Meldung{visible.length === 1 ? "" : "en"} · Erledigte & irrelevante werden ausgeblendet.
+              {reports1.length} aktive Meldung{visible.length === 1 ? "" : "en"} · Erledigte & irrelevante werden ausgeblendet.
             </p>
           </div>
           <Link
