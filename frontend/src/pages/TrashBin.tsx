@@ -1,6 +1,5 @@
 import HanauLayout from "@/components/HanauLayout";
-import { Footer } from "@/components/sections/Footer";
-import { AddTrashBin } from "@/components/sections/AddTrashbin";
+import { AddTrashBin } from "@/components/sections/AddTrashBin";
 
 export default function TrashBin() {
 

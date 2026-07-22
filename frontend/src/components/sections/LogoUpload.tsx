@@ -33,7 +33,7 @@ export const LogoUpload = ({ formData, setFormData }) => {
     <div className="space-y-2">
       <Label className="flex items-center gap-2">
         <Image size={16} />
-        Logo *
+        Bild *
       </Label>
 
       <div

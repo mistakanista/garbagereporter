@@ -9,7 +9,7 @@ import Home from "./pages/Home";
 import Reports from "./pages/Reports";
 import MapPage from "./pages/MapPage";
 import NotFound from "./pages/NotFound";
-import TrashBin from "./pages/Trashbin";
+import TrashBin from "./pages/TrashBin";
 
 const queryClient = new QueryClient();
 
