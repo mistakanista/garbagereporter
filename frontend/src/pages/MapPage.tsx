@@ -4,6 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import HanauLayout from "@/components/HanauLayout";
 import { ISSUE_LABEL, Report, STATUS_LABEL, reportsStore } from "@/lib/reports";
+import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
 
 // Fix leaflet default marker icon paths (bundler can't resolve them automatically).
 const DefaultIcon = L.icon({
@@ -61,7 +62,7 @@ export default function MapPage() {
   }, []);
 
   const active = reports.filter(
-        (r) => r.status !== "erledigt" && r.status !== "irrelevant",
+      (r) => r.report.status !== "done" && r.report.status !== "obsolete",
   );
   // sync markers with reports
   useEffect(() => {
@@ -95,8 +96,6 @@ export default function MapPage() {
         const r1 = reports.find((x) => {
           return x.report.id == focusId;
         });
-        console.log("r1", r1);
-        console.log("focus", focusId);
         if (r1) {
           const bin = r1.trashbin;
           console.log("bin", bin);
@@ -141,8 +140,8 @@ export default function MapPage() {
                   Keine aktiven Meldungen.
                 </li>
               )}
-              {reports.map((r) => (
-                  <li key={r.id}>
+              {active.map((r) => (
+                  <li key={r.report.id}>
                       <Link
                           to={`/karte?report=${r.report.id}`}
                           className={`block px-4 py-3 text-sm hover:bg-muted ${focusId === r.report.id ? "bg-accent" : ""
