@@ -125,7 +125,7 @@ export default function Report() {
       });
     } else {
       toast({
-        title: "Meldung erfolgreich hinzugefügt! ☕",
+        title: "Meldung erfolgreich hinzugefügt! 🎉",
         description: "Unsere Mitarbeiter werden sich darum kümmern!",
       });
       setFormData({trashbinId: "",

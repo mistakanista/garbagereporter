@@ -20,12 +20,10 @@ export default function HanauLayout({
       <header className="bg-secondary border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
           <Link to="/" className="flex items-baseline gap-2">
-            <img
-                  src={host + "hanauLogo.jpg"}
-                  alt="Hanau Logo"
-                  title="Hanau - Brüder Grimm Stadt"
-                  className="h-16 object-contain"
-                />
+            <span className="font-script text-4xl text-primary leading-none">Hanau</span>
+            <span className="text-[11px] uppercase tracking-widest text-muted-foreground hidden sm:inline">
+              Brüder-Grimm-Stadt
+            </span>
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             {navItems.map((n) => (
