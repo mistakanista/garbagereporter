@@ -1,5 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
-import { ReactNode } from "react";
+import { useState, ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { to: "/", label: "Startseite" },
@@ -15,6 +23,14 @@ export default function HanauLayout({
   children: ReactNode;
   breadcrumb?: string;
 }) {
+    const [isScrolled, setIsScrolled] = useState(false);
+  const { i18n, t } = useTranslation();
+  const currentLang = i18n.language;
+  const navItems = [
+    { to: "/", label: t('home') },
+    { to: "/meldungen", label: t('reports') },
+    { to: "/karte", label: t('map') },
+  ];
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="bg-secondary border-b border-border">
@@ -22,7 +38,7 @@ export default function HanauLayout({
           <Link to="/" className="flex items-baseline gap-2">
             <span className="font-script text-4xl text-primary leading-none">Hanau</span>
             <span className="text-[11px] uppercase tracking-widest text-muted-foreground hidden sm:inline">
-              Brüder-Grimm-Stadt
+              {t("brothersGrimm")}
             </span>
           </Link>
           <nav className="flex items-center gap-1 text-sm">
@@ -43,6 +59,30 @@ export default function HanauLayout({
               </NavLink>
             ))}
           </nav>
+          <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                              variant="ghost"
+                              size="sm"
+                              className={`text-sm font-medium transition-colors ${
+                                                isScrolled
+                                                  ? "text-muted-foreground hover:text-foreground"
+                                                  : "text-primary-foreground/70 hover:text-foreground"
+                                              }`}
+                          >
+                            {currentLang.toUpperCase()}
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => i18n.changeLanguage("de")}>
+                            🇩🇪 Deutsch
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => i18n.changeLanguage("en")}>
+                            🇬🇧 English
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
         </div>
       </header>
 

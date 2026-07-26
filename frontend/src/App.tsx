@@ -10,6 +10,7 @@ import Reports from "./pages/Reports";
 import MapPage from "./pages/MapPage";
 import NotFound from "./pages/NotFound";
 import TrashBin from "./pages/TrashBin";
+import "./i18n";
 
 const queryClient = new QueryClient();
 
