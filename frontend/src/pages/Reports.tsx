@@ -5,10 +5,8 @@ import HanauLayout from "@/components/HanauLayout";
 import {
   BIN_DB,
   ISSUE_LABEL,
-  Report,
   ReportStatus,
   STATUS_LABEL,
-  reportsStore,
 } from "@/lib/reports";
 
 const STATUS_COLORS: Record<ReportStatus, string> = {
@@ -82,15 +80,15 @@ export default function Reports() {
         return false;
       }
       if (statusFilter !== "all" && r.report.status !== statusFilter) return false;
-        console.log("iss", issueFilter)
-        console.log("type", r.report)
+
       if (issueFilter !== "all" && r.report.type !== issueFilter) return false;
       const bin = r.trashbin;
       if (districtFilter !== "all" && bin?.district !== districtFilter) return false;
       return true;
     });
+
     filtered.sort((a, b) =>
-      sortDir === "desc" ? b.createdAt - a.createdAt : a.createdAt - b.createdAt,
+        sortDir === "desc" ? b.report.id - a.report.id : a.report.id - b.report.id,
     );
     return filtered;
   }, [reports, statusFilter, issueFilter, districtFilter, sortDir]);
