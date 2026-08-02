@@ -23,12 +23,12 @@ services:
     volumes:
       - app-data:/app/uploads
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "8000:80"
-    depends_on:
-      - backend
+#  frontend:
+#    build: ./frontend
+#    ports:
+#      - "8000:80"
+#    depends_on:
+#      - backend
 
 volumes:
   app-data:

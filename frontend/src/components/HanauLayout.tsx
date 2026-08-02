@@ -60,36 +60,36 @@ export default function HanauLayout({
             ))}
           </nav>
           <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                              variant="ghost"
-                              size="sm"
-                              className={`text-sm font-medium transition-colors ${
-                                                isScrolled
-                                                  ? "text-muted-foreground hover:text-foreground"
-                                                  : "text-primary-foreground/70 hover:text-foreground"
-                                              }`}
-                          >
-                            {currentLang.toUpperCase()}
-                          </Button>
-                        </DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
+              <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-sm font-medium transition-colors ${
+                                    isScrolled
+                                      ? "text-muted-foreground hover:text-foreground"
+                                      : "text-primary-foreground/70 hover:text-foreground"
+                                  }`}
+              >
+                {currentLang.toUpperCase()}
+              </Button>
+            </DropdownMenuTrigger>
 
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => i18n.changeLanguage("de")}>
-                            🇩🇪 Deutsch
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => i18n.changeLanguage("en")}>
-                            🇬🇧 English
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => i18n.changeLanguage("de")}>
+                🇩🇪 Deutsch
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => i18n.changeLanguage("en")}>
+                🇬🇧 English
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
       <div className="bg-muted border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-2 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary">Startseite</Link>
-          {" › "}Bürgerservice › Sauberkeit
+          <Link to="/" className="hover:text-primary">{t("home")}</Link>
+          {" › "}{t("citizenServices")}{" › "}{t("cleanness")}
           {breadcrumb ? <> › {breadcrumb}</> : null}
         </div>
       </div>
@@ -97,9 +97,9 @@ export default function HanauLayout({
       <main className="flex-1">{children}</main>
 
       <footer className="bg-secondary border-t border-border mt-12 py-6 text-center text-xs text-muted-foreground">
-        © Stadt Hanau – Prototyp Mülleimer-Melder ·{" "}
-        <a href="#" className="hover:text-primary">Impressum</a> ·{" "}
-        <a href="#" className="hover:text-primary">Datenschutz</a>
+        © {t("hanau")} ·{" "}
+        <a href="#" className="hover:text-primary">{t("imprint")}</a> ·{" "}
+        <a href="#" className="hover:text-primary">{t("dataProtection")}</a>
       </footer>
     </div>
   );
