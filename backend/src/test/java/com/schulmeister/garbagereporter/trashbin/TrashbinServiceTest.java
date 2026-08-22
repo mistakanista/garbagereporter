@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static com.schulmeister.garbagereporter.trashbin.TrashbinService.*;
@@ -75,7 +76,34 @@ class TrashbinServiceTest {
         assertTrue(response.contains(number.toString()));
     }
 
+    @Test
+    void listTrashbins() {
 
+        when(repository.findByClient(CLIENT)).thenReturn(List.of(getTrashbin()));
+
+        List<Trashbin> trashbins = trashbinService.findByClient();
+        assertNotNull(trashbins);
+        assertEquals(1, trashbins.size());
+        Trashbin trashbin = trashbins.getFirst();
+        assertEquals(number, trashbin.getNumber());
+        assertEquals(CLIENT, trashbin.getClient());
+    }
+
+    private Trashbin getTrashbin() {
+        Trashbin trashbin = new Trashbin();
+        trashbin.setNumber(number);
+        trashbin.setType("Mülleimer 80L");
+        trashbin.setClient(CLIENT);
+        trashbin.setLocation("Gegenüber Penny");
+        trashbin.setDistrict("Wolfgang");
+        trashbin.setStreet("Alfred-Nobel-Bogen");
+        trashbin.setHouseNumber("5");
+        trashbin.setZip("63457");
+        trashbin.setCity("Hanau");
+        trashbin.setLatitude(new BigDecimal("50.12708652788195"));
+        trashbin.setLongitude(new BigDecimal("8.946542404178638"));
+        return trashbin;
+    }
 
     private TrashbinRequest getTrashbinRequest() {
         return TrashbinRequest.builder()

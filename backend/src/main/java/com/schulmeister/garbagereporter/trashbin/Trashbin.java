@@ -39,6 +39,9 @@ public class Trashbin {
     @Column(nullable = false)
     private String city;
 
+    @Column(nullable = false)
+    private String client;
+
     @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal latitude;
 

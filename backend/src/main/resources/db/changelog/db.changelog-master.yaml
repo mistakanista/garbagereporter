@@ -137,3 +137,13 @@ databaseChangeLog:
               - column:
                   name: description
                   type: TEXT
+  - changeSet:
+      id: 3-add-client-column
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: trashbin
+            columns:
+              - column:
+                  name: client
+                  type: VARCHAR(255)

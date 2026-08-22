@@ -33,7 +33,7 @@ public class TrashbinController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Trashbin>> findAll() {
-        List<Trashbin> trashBinList = trashbinService.findAll();
+        List<Trashbin> trashBinList = trashbinService.findByClient();
         log.info("Trash bins: {}", trashBinList);
         return ResponseEntity.ok(trashBinList);
     }

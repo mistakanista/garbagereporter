@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ public class TrashbinService {
     public static final String TRASH_BIN_ADDED = "Trash bin successfully added: ";
     public static final String EXISTING_NUMBER = "The trash bin number already exists: ";
     public static final String ERROR_SAVING_TRASH_BIN = "Error saving trash bin: ";
+    public static final String CLIENT = "Hanau";
 
     private TrashbinRepository repository;
 
@@ -40,10 +42,11 @@ public class TrashbinService {
         trashbin.setDistrict(request.getDistrict());
         trashbin.setZip(request.getZip());
         trashbin.setCity(request.getCity());
+        trashbin.setClient(CLIENT);
         trashbin.setLatitude(request.getLatitude());
         trashbin.setLongitude(request.getLongitude());
-        trashbin.setLastModified(LocalDateTime.now());
-        trashbin.setCreated(LocalDateTime.now());
+        trashbin.setLastModified(LocalDateTime.now(ZoneId.of("Europe/Berlin")));
+        trashbin.setCreated(LocalDateTime.now(ZoneId.of("Europe/Berlin")));
 
         try {
             response = TRASH_BIN_ADDED + request.getNumber();
@@ -61,7 +64,7 @@ public class TrashbinService {
         return trashbin.orElse(null);
     }
 
-    public List<Trashbin> findAll() {
-        return repository.findAll();
+    public List<Trashbin> findByClient() {
+        return repository.findByClient(CLIENT);
     }
 }
