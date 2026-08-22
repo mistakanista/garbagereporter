@@ -147,3 +147,13 @@ databaseChangeLog:
               - column:
                   name: client
                   type: VARCHAR(255)
+  - changeSet:
+      id: 4-add-client-column-report
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: report
+            columns:
+              - column:
+                  name: client
+                  type: VARCHAR(255)

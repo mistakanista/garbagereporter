@@ -26,6 +26,9 @@ public class Report {
     private String description;
 
     @Column(nullable = false)
+    private String client;
+
+    @Column(nullable = false)
     private String status;
 
     @Column(name = "ai_approved", nullable = false)
