@@ -21,7 +21,7 @@ public class TrashbinService {
     public static final String TRASH_BIN_ADDED = "Trash bin successfully added: ";
     public static final String EXISTING_NUMBER = "The trash bin number already exists: ";
     public static final String ERROR_SAVING_TRASH_BIN = "Error saving trash bin: ";
-    public static final String CLIENT = "Hanau";
+    public static final String CLIENT = System.getenv().getOrDefault("CLIENT", "Hanau");
 
     private TrashbinRepository repository;
 
@@ -65,6 +65,7 @@ public class TrashbinService {
     }
 
     public List<Trashbin> findByClient() {
+        log.info("Client t {}", CLIENT);
         return repository.findByClient(CLIENT);
     }
 }

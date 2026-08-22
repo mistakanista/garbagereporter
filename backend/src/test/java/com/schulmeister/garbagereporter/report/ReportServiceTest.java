@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.schulmeister.garbagereporter.report.ReportService.*;
+import static com.schulmeister.garbagereporter.trashbin.TrashbinService.CLIENT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -83,7 +84,7 @@ class ReportServiceTest {
     }
 
     @Test
-    void findAll() {
+    void findByClient() {
 
         Report report = getReport();
         List<Report> reports = new ArrayList<>();
@@ -91,10 +92,10 @@ class ReportServiceTest {
         Trashbin bin = getTrashbin();
         List<Trashbin> bins = new ArrayList<>();
         bins.add(bin);
-        when(trashbinRepository.findAll()).thenReturn(bins);
-        when(repository.findAll(Sort.by(Sort.Direction.DESC, "created"))).thenReturn(reports);
+        when(trashbinRepository.findByClient(CLIENT)).thenReturn(bins);
+        when(repository.findByClient(CLIENT, Sort.by(Sort.Direction.DESC, "created"))).thenReturn(reports);
 
-        List<BinReport> reportBins = reportService.findAll();
+        List<BinReport> reportBins = reportService.findByClient();
         assertNotNull(reportBins);
         assertEquals(1, reportBins.size());
         BinReport reportBin = reportBins.getFirst();

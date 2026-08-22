@@ -43,7 +43,7 @@ public class ReportController {
 
     @GetMapping("/list")
     public ResponseEntity<List<BinReport>> findAll() {
-        List<BinReport> binReportList = reportService.findAll();
+        List<BinReport> binReportList = reportService.findByClient();
         log.info("Report bins: {}", binReportList);
         return ResponseEntity.ok(binReportList);
     }

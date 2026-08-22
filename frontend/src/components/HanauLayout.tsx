@@ -33,12 +33,14 @@ export default function HanauLayout({
   ];
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="bg-secondary border-b border-border">
+      <header className="bg-primary border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
           <Link to="/" className="flex items-baseline gap-2">
-            <span className="font-script text-4xl text-primary leading-none">Hanau</span>
-            <span className="text-[11px] uppercase tracking-widest text-muted-foreground hidden sm:inline">
-              {t("brothersGrimm")}
+            <div className="font-bold text-2xl tracking-tight text-primary-foreground">
+                frankfurt<span className="opacity-80">.de</span>
+            </div>
+            <span className="hidden sm:block text-sm opacity-90 border-l border-primary-foreground/30 pl-4 text-primary-foreground">
+               Stadt Frankfurt am Main
             </span>
           </Link>
           <nav className="flex items-center gap-1 text-sm">
@@ -50,8 +52,8 @@ export default function HanauLayout({
                 className={({ isActive }) =>
                   `px-3 py-2 rounded font-semibold transition-colors ${
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground hover:bg-accent"
+                      ? "bg-secondary text-foreground"
+                      : "text-primary-foreground hover:bg-accent hover:text-foreground"
                   }`
                 }
               >

@@ -18,7 +18,7 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const HANAU_CENTER: [number, number] = [50.1336, 8.9166];
+const FRANKFURT_CENTER: [number, number] = [50.1109, 8.6821];
 
 export default function MapPage() {
   const { t } = useTranslation();
@@ -54,7 +54,7 @@ export default function MapPage() {
   // init map once
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = L.map(containerRef.current).setView(HANAU_CENTER, 13);
+    const map = L.map(containerRef.current).setView(FRANKFURT_CENTER, 12);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap-Mitwirkende",
       maxZoom: 19,

@@ -62,13 +62,13 @@ export default function Home() {
             </div>
           </Link>
           <Link
-            to="/melden/1042"
+            to="/melden/3345"
             className="border border-border bg-card rounded p-5 hover:border-primary transition-colors"
           >
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
               Demo
             </div>
-            <div className="font-bold text-lg">QR-Code simulieren</div>
+            <div className="font-bold text-lg">{t("homeSimulateQr")} </div>
             <div className="text-sm text-muted-foreground mt-1">
               {t("homeReportDirect")}
             </div>

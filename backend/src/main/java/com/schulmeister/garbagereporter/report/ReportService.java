@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.schulmeister.garbagereporter.trashbin.TrashbinService.CLIENT;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +30,7 @@ public class ReportService {
     public static final String BIN_ABSENT = "Trash bin does not exist ";
     public static final String REPORT_NOT_FOUND = "Report could not be found with id: ";
     public static final String STATUS_UPDATED = "Status updated successfully for : ";
+    public static final String TIMEZONE = "Europe/Berlin";
 
     private ReportRepository repository;
     private TrashbinRepository trashbinRepository;
@@ -46,8 +50,9 @@ public class ReportService {
         report.setDescription(request.getDescription());
         report.setAiApproved(false);
         report.setStatus(STATUS_NEW);
-        report.setLastModified(LocalDateTime.now());
-        report.setCreated(LocalDateTime.now());
+        report.setClient(CLIENT);
+        report.setLastModified(LocalDateTime.now(ZoneId.of(TIMEZONE)));
+        report.setCreated(LocalDateTime.now(ZoneId.of(TIMEZONE)));
 
         try {
             response = REPORT_ADDED + request.getTrashbinId();
@@ -65,12 +70,15 @@ public class ReportService {
         return report.orElse(null);
     }
 
-    public List<BinReport> findAll() {
+    public List<BinReport> findByClient() {
         List<BinReport> binReportList = new ArrayList<>();
-        List<Report> reportList = repository.findAll(
-            Sort.by(Sort.Direction.DESC, "created")
+        List<Report> reportList = repository.findByClient(
+                CLIENT,
+                Sort.by(Sort.Direction.DESC, "created")
         );
-        List<Trashbin> trashbinList = trashbinRepository.findAll();
+        log.info("client: {}", CLIENT);
+        log.info("reportList: {}", reportList);
+        List<Trashbin> trashbinList = trashbinRepository.findByClient(CLIENT);
         for (Report report : reportList) {
             trashbinList.stream().filter(trashbin -> trashbin.getNumber().equals(report.getTrashbinId()))
                     .findFirst()
@@ -90,7 +98,7 @@ public class ReportService {
         if (reportOptional.isPresent()) {
             Report report = reportOptional.get();
             report.setStatus(request.getStatus());
-            report.setLastModified(LocalDateTime.now());
+            report.setLastModified(LocalDateTime.now(ZoneId.of(TIMEZONE)));
             try {
                 response = STATUS_UPDATED + report.getTrashbinId() + " Status: " + request.getStatus();
                 repository.save(report);

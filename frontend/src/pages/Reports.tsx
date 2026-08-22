@@ -353,7 +353,7 @@ function ActionBtn({
 }) {
   const cls =
     variant === "success"
-      ? "bg-[hsl(var(--success))] text-white hover:opacity-90"
+      ? "border border-input hover:bg-muted"
       : variant === "muted"
         ? "border border-input hover:bg-muted"
         : "bg-primary text-primary-foreground hover:bg-primary/90";

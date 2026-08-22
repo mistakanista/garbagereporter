@@ -2,48 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Caveat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
 @layer base {
   :root {
-    /* hanau.de inspired — sandy beige background, dark teal accent, brown ink */
-    --background: 40 35% 96%;
-    --foreground: 30 25% 15%;
+    /* frankfurt.de inspired — red, white, dark text */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 30 25% 15%;
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 30 25% 15%;
+    --popover-foreground: 0 0% 12%;
 
-    --primary: 24 13% 85%;
-    --primary-foreground: 30 25% 15%;
+    --primary: 354 78% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 30% 90%;
-    --secondary-foreground: 30 25% 15%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 40 25% 92%;
-    --muted-foreground: 30 15% 40%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 35%;
 
-    --accent: 175 40% 92%;
-    --accent-foreground: 175 55% 22%;
+    --accent: 354 78% 96%;
+    --accent-foreground: 354 78% 35%;
 
-    --destructive: 0 70% 45%;
+    --destructive: 0 84% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --warning: 38 90% 50%;
-    --success: 145 55% 35%;
-    --info: 210 70% 45%;
-
-    --border: 30 15% 82%;
-    --input: 30 15% 78%;
-    --ring: 175 55% 25%;
+    --border: 0 0% 85%;
+    --input: 0 0% 80%;
+    --ring: 354 78% 42%;
 
     --radius: 0.25rem;
 
-    --shadow-sm: 0 1px 2px 0 hsl(30 25% 15% / 0.06);
-    --shadow-md: 0 2px 6px hsl(30 25% 15% / 0.08);
-    --shadow-lg: 0 4px 14px hsl(30 25% 15% / 0.12);
+    --gold: 38 80% 50%;
+    --gold-light: 40 70% 88%;
+    --silver: 220 10% 60%;
+    --silver-light: 220 15% 90%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 2px 4px hsl(0 0% 0% / 0.08);
+    --shadow-lg: 0 4px 12px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 0 3px hsl(354 78% 42% / 0.2);
   }
 }
 
@@ -56,9 +58,6 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Open Sans', system-ui, sans-serif;
     font-weight: 700;
-  }
-  .font-script {
-    font-family: 'Caveat', cursive;
   }
 }
 
