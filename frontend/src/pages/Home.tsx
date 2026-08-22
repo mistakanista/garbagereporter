@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import HanauLayout from "@/components/HanauLayout";
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
   const [bins, setBins] = useState([]);
   const [binsFetched, setBinsFetched] = useState(false);
+  const { t } = useTranslation();
   useEffect(() => {
 
     const fetchBins = async () => {
@@ -29,11 +31,9 @@ export default function Home() {
   return (
     <HanauLayout>
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">Mülleimer-Melder Hanau</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("homeReporter")}</h1>
         <p className="text-muted-foreground mb-8 max-w-2xl">
-          Scannen Sie den QR-Code auf einem Mülleimer in Hanau, um diesen schnell
-          und unkompliziert als voll oder beschädigt zu melden. Für diesen Prototyp
-          können Sie unten einen Beispiel-Mülleimer auswählen.
+          {t("homeIntro")}
         </p>
 
         <div className="grid md:grid-cols-3 gap-4 mb-10">
@@ -42,11 +42,11 @@ export default function Home() {
             className="border border-border bg-card rounded p-5 hover:border-primary transition-colors"
           >
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-              Verwaltung
+              {t("homeAdministration")}
             </div>
-            <div className="font-bold text-lg">Meldungen verwalten</div>
+            <div className="font-bold text-lg">{t("homeAdministerReports")}</div>
             <div className="text-sm text-muted-foreground mt-1">
-              Übersicht, filtern, sortieren und Status setzen.
+              {t("homeOverview")}
             </div>
           </Link>
           <Link
@@ -54,11 +54,11 @@ export default function Home() {
             className="border border-border bg-card rounded p-5 hover:border-primary transition-colors"
           >
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-              Karte
+              {t("map")}
             </div>
-            <div className="font-bold text-lg">Standorte auf der Karte</div>
+            <div className="font-bold text-lg">{t("homeLocations")}</div>
             <div className="text-sm text-muted-foreground mt-1">
-              Alle offenen Meldungen in Hanau auf einen Blick.
+              {t("homeReports")}
             </div>
           </Link>
           <Link
@@ -70,14 +70,14 @@ export default function Home() {
             </div>
             <div className="font-bold text-lg">QR-Code simulieren</div>
             <div className="text-sm text-muted-foreground mt-1">
-              Direkt zur Meldung für Mülleimer #1042.
+              {t("homeReportDirect")}
             </div>
           </Link>
         </div>
 
         <div className="border border-border rounded bg-card">
           <div className="px-5 py-3 border-b border-border bg-secondary font-semibold">
-            Beispiel-Mülleimer (statt QR-Scan)
+            {t("homeTrashBins")}
           </div>
 
           <ul className="divide-y divide-border">
@@ -93,7 +93,7 @@ export default function Home() {
                       to={`/melden/${bin.number}`}
                       className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold hover:bg-primary/90"
                     >
-                      Melden →
+                      {t("report")} →
                     </Link>
                   </li>
               ))}
