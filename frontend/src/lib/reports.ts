@@ -1,5 +1,7 @@
 // Shared report store backed by localStorage.
 
+import i18n from "@/i18n";
+
 export type ReportStatus = "new" | "confirmed" | "planned" | "done" | "obsolete";
 export type IssueType = "voll" | "beschaedigt" | "illegal" | "beschmiert";
 
@@ -184,16 +186,16 @@ export const reportsStore = {
 };
 
 export const STATUS_LABEL: Record<ReportStatus, string> = {
-  new: "Neu",
-  confirmed: "Bestätigt",
-  planned: "Geplant",
-  done: "Erledigt",
-  obsolete: "Irrelevant",
+  new: i18n.t("reportStatusNew"),
+  confirmed: i18n.t("reportStatusConfirmed"),
+  planned: i18n.t("reportStatusPlanned"),
+  done: i18n.t("reportStatusDone"),
+  obsolete: i18n.t("reportStatusObsolete"),
 };
 
 export const ISSUE_LABEL: Record<IssueType, string> = {
-  voll: "Voll / überfüllt",
-  beschaedigt: "Beschädigt",
-  illegal: "Illegale Ablagerungen",
-  beschmiert: "Beschmiert / Graffitti",
+  voll: i18n.t("reportIssueFull"),
+  beschaedigt: i18n.t("reportIssueDamaged"),
+  illegal: i18n.t("reportIssueIllegal"),
+  beschmiert: i18n.t("reportIssueDirty"),
 };

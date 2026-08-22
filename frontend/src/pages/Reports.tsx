@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import HanauLayout from "@/components/HanauLayout";
 import {
@@ -37,6 +38,7 @@ interface BinReport {
 type SortDir = "desc" | "asc";
 
 export default function Reports() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
   const [issueFilter, setIssueFilter] = useState<"all" | "voll" | "beschaedigt">("all");
@@ -112,8 +114,8 @@ export default function Reports() {
   const handleSubmit = async (id: number, status: string) => {
       if (!status.trim() || !id) {
               toast({
-                  title: "Fehler",
-                  description: "Kein Status oder keine Id vorhanden",
+                  title: t("reportsErrorTitle"),
+                  description: t("reportsErrorDescription"),
                   variant: "destructive",
               });
               return;
@@ -134,14 +136,14 @@ export default function Reports() {
 
           if (response.status === 400) {
               toast({
-                  title: "Status Aktualisierung Fehler",
-                  description: "Ein Fehler ist bei der Aktualisierung des Status der Meldung aufgetreten",
+                  title: t("reportsStatusUpdateErrorTitle"),
+                  description: t("reportsStatusUpdateErrorDescription"),
                   variant: "destructive",
               });
           } else {
               toast({
-                  title: "Status aktualisiert! 🎉",
-                  description: "Der Status der Meldung wurde erfolgreich aktualisiert",
+                  title: t("reportsStatusUpdatedTitle"),
+                  description: t("reportsStatusUpdatedDescription"),
               });
           }
 
@@ -150,20 +152,20 @@ export default function Reports() {
       };
 
   return (
-    <HanauLayout breadcrumb="Meldungen">
+    <HanauLayout breadcrumb={t("reportsBreadcrumb")}>
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-1">Meldungen</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1">{t("reportsTitle")}</h1>
             <p className="text-muted-foreground">
-              {reports.length} aktive Meldung{visible.length === 1 ? "" : "en"} · Erledigte & irrelevante werden ausgeblendet.
+              {t("reportsSummary", { count: reports.length })} {t("reportsHiddenInfo")}
             </p>
           </div>
           <Link
             to="/karte"
             className="px-4 py-2 border border-input rounded text-sm font-semibold hover:bg-muted"
           >
-            Auf Karte anzeigen →
+            {t("reportsMapLink")} →
           </Link>
         </div>
 
@@ -171,14 +173,14 @@ export default function Reports() {
         <div className="border border-border rounded bg-card p-4 mb-6 grid sm:grid-cols-4 gap-3">
           <div>
             <label className="block text-xs font-semibold mb-1 text-muted-foreground uppercase">
-              Status
+              {t("reportsStatusLabel")}
             </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ReportStatus | "all")}
               className="w-full h-10 px-2 border border-input rounded bg-background"
             >
-              <option value="all">Alle aktiven</option>
+              <option value="all">{t("reportsStatusAll")}</option>
               {Object.entries(STATUS_LABEL).map(([k, v]) => (
                 <option key={k} value={k}>{v}</option>
               ))}
@@ -186,30 +188,30 @@ export default function Reports() {
           </div>
           <div>
             <label className="block text-xs font-semibold mb-1 text-muted-foreground uppercase">
-              Art
+              {t("reportsIssueLabel")}
             </label>
             <select
               value={issueFilter}
               onChange={(e) => setIssueFilter(e.target.value as typeof issueFilter)}
               className="w-full h-10 px-2 border border-input rounded bg-background"
             >
-              <option value="all">Alle</option>
-              <option value="voll">Voll / überfüllt</option>
-              <option value="beschaedigt">Beschädigt</option>
-              <option value="beschmiert">Beschmiert / Grafitti</option>
-              <option value="illegal">Illegale Ablagerungen</option>
+              <option value="all">{t("reportsIssueAll")}</option>
+              <option value="voll">{t("reportsIssueOverflow")}</option>
+              <option value="beschaedigt">{t("reportsIssueDamaged")}</option>
+              <option value="beschmiert">{t("reportsIssueDirty")}</option>
+              <option value="illegal">{t("reportsIssueIllegal")}</option>
             </select>
           </div>
           <div>
             <label className="block text-xs font-semibold mb-1 text-muted-foreground uppercase">
-              Stadtteil
+              {t("reportsDistrictLabel")}
             </label>
             <select
               value={districtFilter}
               onChange={(e) => setDistrictFilter(e.target.value)}
               className="w-full h-10 px-2 border border-input rounded bg-background"
             >
-              <option value="all">Alle</option>
+              <option value="all">{t("reportsIssueAll")}</option>
               {districts.map((d) => (
                 <option key={d} value={d}>{d}</option>
               ))}
@@ -217,15 +219,15 @@ export default function Reports() {
           </div>
           <div>
             <label className="block text-xs font-semibold mb-1 text-muted-foreground uppercase">
-              Sortierung
+              {t("reportsSortLabel")}
             </label>
             <select
               value={sortDir}
               onChange={(e) => setSortDir(e.target.value as SortDir)}
               className="w-full h-10 px-2 border border-input rounded bg-background"
             >
-              <option value="desc">Neueste zuerst</option>
-              <option value="asc">Älteste zuerst</option>
+              <option value="desc">{t("reportsSortNewest")}</option>
+              <option value="asc">{t("reportsSortOldest")}</option>
             </select>
           </div>
         </div>
@@ -236,27 +238,27 @@ export default function Reports() {
             <table className="w-full text-sm">
               <thead className="bg-secondary text-left">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">Foto</th>
-                  <th className="px-4 py-3 font-semibold">Eimer</th>
-                  <th className="px-4 py-3 font-semibold">Standort</th>
-                  <th className="px-4 py-3 font-semibold">Art</th>
+                  <th className="px-4 py-3 font-semibold">{t("reportsPhoto")}</th>
+                  <th className="px-4 py-3 font-semibold">{t("reportsBin")}</th>
+                  <th className="px-4 py-3 font-semibold">{t("reportsLocation")}</th>
+                  <th className="px-4 py-3 font-semibold">{t("reportsIssue")}</th>
                   <th className="px-4 py-3 font-semibold">
                     <button
                       onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}
                       className="font-semibold hover:text-primary"
                     >
-                      Zeitpunkt {sortDir === "desc" ? "↓" : "↑"}
+                      {t("reportsTime")} {sortDir === "desc" ? "↓" : "↑"}
                     </button>
                   </th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold text-right">Aktionen</th>
+                  <th className="px-4 py-3 font-semibold">{t("reportsStatus")}</th>
+                  <th className="px-4 py-3 font-semibold text-right">{t("reportsActions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {visible.length === 0 && (
                   <tr>
                     <td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">
-                      Keine Meldungen mit diesen Filtern.
+                      {t("reportsNoMatching")}
                     </td>
                   </tr>
                 )}
@@ -267,13 +269,13 @@ export default function Reports() {
                       <a href={`http://localhost:8010/reports/${item.report.image}`} target="_blank" rel="noreferrer">
                         <img
                           src={`http://localhost:8010/reports/${item.report.image}`}
-                          alt={item.trashbin.location ?? "Foto"}
+                          alt={item.trashbin.location ?? t("reportsNoPhoto")}
                           className="object-cover rounded border border-border"
                         />
                       </a>
                     ) : (
                       <div className="h-20 rounded border border-dashed border-border bg-muted/40 flex items-center justify-center text-[10px] text-muted-foreground text-center px-1">
-                        Kein Foto
+                        {t("reportsNoPhoto")}
                       </div>
                     )}
                   </td>
@@ -307,25 +309,25 @@ export default function Reports() {
                     <div className="flex flex-wrap gap-1 justify-end">
                       <ActionBtn
                         onClick={() => setConfirmed(item)}
-                        label="Bestätigen"
+                        label={t("reportsActionConfirm")}
                       />
-                      <ActionBtn onClick={() => setPlanned(item)} label="Planen" />
+                      <ActionBtn onClick={() => setPlanned(item)} label={t("reportsActionPlan")} />
                       <ActionBtn
                         onClick={() => setDone(item)}
-                        label="Erledigt"
+                        label={t("reportsActionDone")}
                         variant="success"
                       />
 
                       <ActionBtn
                           onClick={() => setObsolete(item)}
-                          label="Irrelevant"
+                          label={t("reportsActionIrrelevant")}
                           variant="muted"
                       />
                       <Link
                         to={`/karte?report=${item.report.id}`}
                         className="px-2 py-1 text-xs rounded border border-input hover:bg-muted"
                       >
-                        Karte
+                        {t("reportsViewOnMap")}
                       </Link>
                     </div>
                   </td>

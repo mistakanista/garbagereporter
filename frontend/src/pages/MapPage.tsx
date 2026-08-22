@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import HanauLayout from "@/components/HanauLayout";
 import { ISSUE_LABEL, Report, STATUS_LABEL, reportsStore } from "@/lib/reports";
-import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
 
 // Fix leaflet default marker icon paths (bundler can't resolve them automatically).
 const DefaultIcon = L.icon({
@@ -21,6 +21,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const HANAU_CENTER: [number, number] = [50.1336, 8.9166];
 
 export default function MapPage() {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const focusId = params.get("report");
   const mapRef = useRef<L.Map | null>(null);
@@ -78,7 +79,7 @@ export default function MapPage() {
       const m = L.marker([bin.latitude, bin.longitude]).addTo(map);
       m.bindPopup(
         `<div style="font-family:system-ui;font-size:13px;min-width:180px">
-          <strong>Mülleimer #${r.trashbin.number}</strong><br/>
+          <strong>${t("mapBinLabel", { number: r.trashbin.number })}</strong><br/>
           ${escapeHtml(bin.location)}<br/>
           <em>${escapeHtml(bin.district)}</em><br/>
           <hr style="margin:6px 0;border:0;border-top:1px solid #ddd"/>
@@ -105,23 +106,23 @@ export default function MapPage() {
           }
         }
     }
-  }, [active, reports, focusId]);
+  }, [active, reports, focusId, t]);
 
   return (
-    <HanauLayout breadcrumb="Karte">
+    <HanauLayout breadcrumb={t("mapBreadcrumb")}>
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-1">Karte der Meldungen</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1">{t("mapReportsTitle")}</h1>
             <p className="text-muted-foreground">
-              {reports.length} aktive Meldung{reports.length === 1 ? "" : "en"} in Hanau.
+              {t("mapReportsSummary", { count: reports.length })}
             </p>
           </div>
           <Link
             to="/meldungen"
             className="px-4 py-2 border border-input rounded text-sm font-semibold hover:bg-muted"
           >
-            Zur Tabelle →
+            {t("mapToTable")} →
           </Link>
         </div>
 
@@ -132,12 +133,12 @@ export default function MapPage() {
           />
           <aside className="border border-border rounded bg-card overflow-hidden">
             <div className="px-4 py-3 border-b border-border bg-secondary font-semibold text-sm">
-              Aktive Meldungen
+              {t("mapActiveReports")}
             </div>
             <ul className="divide-y divide-border max-h-[560px] overflow-y-auto">
               {active.length === 0 && (
                 <li className="px-4 py-6 text-sm text-muted-foreground text-center">
-                  Keine aktiven Meldungen.
+                  {t("mapNoActiveReports")}
                 </li>
               )}
               {active.map((r) => (

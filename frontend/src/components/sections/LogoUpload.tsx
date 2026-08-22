@@ -1,8 +1,10 @@
 import { Label } from "@/components/ui/label";
 import { useDropzone } from "react-dropzone";
+import { useTranslation } from "react-i18next";
 import { Image } from "lucide-react";
 
 export const LogoUpload = ({ formData, setFormData }) => {
+  const { t } = useTranslation();
 
   const onDrop = async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -33,7 +35,7 @@ export const LogoUpload = ({ formData, setFormData }) => {
     <div className="space-y-2">
       <Label className="flex items-center gap-2">
         <Image size={16} />
-        Bild *
+        {t("logoImageLabel")}
       </Label>
 
       <div
@@ -43,9 +45,9 @@ export const LogoUpload = ({ formData, setFormData }) => {
         <input {...getInputProps()} />
 
         {isDragActive ? (
-          <p>Bild hier ablegen ...</p>
+          <p>{t("logoDropActive")}</p>
         ) : (
-          <p>Bild hier ablegen oder hochladen</p>
+          <p>{t("logoDropIdle")}</p>
         )}
       </div>
 

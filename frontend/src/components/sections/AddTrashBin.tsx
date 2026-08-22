@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import {
 } from "@/lib/reports";
 
 export const AddTrashBin = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,8 +38,8 @@ export const AddTrashBin = () => {
 
     if (!formData.number.trim()) {
       toast({
-        title: "Fehlende Information",
-        description: "Bitte Eimer Nummer angegeben",
+        title: t("binMissingInfoTitle"),
+        description: t("binMissingNumberDescription"),
         variant: "destructive",
       });
       return;
@@ -45,8 +47,8 @@ export const AddTrashBin = () => {
 
     if (!formData.type.trim()) {
           toast({
-            title: "Fehlende Information",
-            description: "Bitte Eimer Typ angegeben",
+            title: t("binMissingInfoTitle"),
+            description: t("binMissingTypeDescription"),
             variant: "destructive",
           });
           return;
@@ -54,8 +56,8 @@ export const AddTrashBin = () => {
 
     if (!formData.location.trim()) {
       toast({
-        title: "Fehlende Information",
-        description: "Bitte Beschreibung des Orts angeben",
+        title: t("binMissingInfoTitle"),
+        description: t("binMissingLocationDescription"),
         variant: "destructive",
       });
       return;
@@ -63,8 +65,8 @@ export const AddTrashBin = () => {
 
     if (!formData.district.trim()) {
       toast({
-        title: "Fehlende Information",
-        description: "Bitte Stadteil auswählen",
+        title: t("binMissingInfoTitle"),
+        description: t("binMissingDistrictDescription"),
         variant: "destructive",
       });
       return;
@@ -72,8 +74,8 @@ export const AddTrashBin = () => {
 
     if (!formData.zip.trim()) {
       toast({
-        title: "Fehlende Information",
-        description: "Bitte PLZ angeben",
+        title: t("binMissingInfoTitle"),
+        description: t("binMissingZipDescription"),
         variant: "destructive",
       });
       return;
@@ -81,8 +83,8 @@ export const AddTrashBin = () => {
 
     if (!formData.city.trim()) {
       toast({
-        title: "Fehlende Information",
-        description: "Bitte Ortsnamen angeben",
+        title: t("binMissingInfoTitle"),
+        description: t("binMissingCityDescription"),
         variant: "destructive",
       });
       return;
@@ -90,8 +92,8 @@ export const AddTrashBin = () => {
 
     if (!formData.latitude.trim() || !formData.longitude.trim()) {
           toast({
-            title: "Fehlende Information",
-            description: "Bitte Geokoordinaten angeben.",
+            title: t("binMissingInfoTitle"),
+            description: t("binMissingCoordinatesDescription"),
             variant: "destructive",
           });
           return;
@@ -121,20 +123,20 @@ export const AddTrashBin = () => {
     console.log("resp", response);
     if (response.status === 409) {
       toast({
-        title: "Nummer vergeben",
-        description: "Diese Eimer Nummer ist bereits vergeben.",
+        title: t("binNumberTakenTitle"),
+        description: t("binNumberTakenDescription"),
         variant: "destructive",
       });
     } else if (response.status >= 400) {
       toast({
-        title: "Eimer hinzufügen fehlgeschlagen",
-        description: "Beim Speichern des Eimers ist ein Fehler aufgetreten",
+        title: t("binAddFailedTitle"),
+        description: t("binAddFailedDescription"),
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Eimer erfolgreich hinzugefügt",
-        description: "Es können jetzt Meldungen für den Eimer hinzugefügt werden",
+        title: t("binSuccessTitle"),
+        description: t("binSuccessDescription"),
       });
       setFormData({  number: "",
                             type: "",
@@ -158,20 +160,20 @@ export const AddTrashBin = () => {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Mülleimer Verwaltung
+              {t("binManagementTitle")}
             </h2>
             <p className="text-lg text-muted-foreground">
-                Hier können neue Mülleimer hinzugefügt werden. Bitte die Nummer, den Typ, den Ort und die Geokoordinaten angeben.
+                {t("binManagementIntro")}
             </p>
           </div>
 
           <Card className="glass-card shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                Eimer hinzufügen
+                {t("binAddTitle")}
               </CardTitle>
               <CardDescription>
-                Bitte die Felder ausfüllen und auf "Eimer hinzufügen" klicken.
+                {t("binAddDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -179,11 +181,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="number" className="flex items-center gap-2">
                     <Hash size={16} />
-                    Nummer *
+                    {t("binNumberLabel")}
                   </Label>
                   <Input
                     id="number"
-                    placeholder="Mülleimer Nummer"
+                    placeholder={t("binNumberPlaceholder")}
                     value={formData.number}
                     onChange={(e) => setFormData({ ...formData, number: e.target.value })}
                     className="h-12"
@@ -193,11 +195,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="type" className="flex items-center gap-2">
                     <FileType size={16} />
-                    Typ *
+                    {t("binTypeLabel")}
                   </Label>
                   <Input
                     id="type"
-                    placeholder="Mülleimer Typ"
+                    placeholder={t("binTypePlaceholder")}
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     className="h-12"
@@ -207,11 +209,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="location" className="flex items-center gap-2">
                     <Locate size={16} />
-                    Beschreibung des Orts *
+                    {t("binLocationLabel")}
                   </Label>
                   <Input
                     id="location"
-                    placeholder="Beschreibung der Lage"
+                    placeholder={t("binLocationPlaceholder")}
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     className="h-12"
@@ -221,11 +223,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="street" className="flex items-center gap-2">
                     <Road size={16} />
-                    Straße
+                    {t("binStreetLabel")}
                   </Label>
                   <Input
                     id="street"
-                    placeholder="Straße"
+                    placeholder={t("binStreetPlaceholder")}
                     value={formData.street}
                     onChange={(e) => setFormData({ ...formData, street: e.target.value })}
                     className="h-12"
@@ -235,11 +237,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="houseNumber" className="flex items-center gap-2">
                     <House size={16} />
-                    Hausnummer
+                    {t("binHouseNumberLabel")}
                   </Label>
                   <Input
                     id="houseNumber"
-                    placeholder="Hausnummer"
+                    placeholder={t("binHouseNumberPlaceholder")}
                     value={formData.houseNumber}
                     onChange={(e) => setFormData({ ...formData, houseNumber: e.target.value })}
                     className="h-12"
@@ -249,14 +251,14 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="district" className="flex items-center gap-2">
                     <Locate size={16} />
-                    Stadtteil *
+                    {t("binDistrictLabel")}
                   </Label>
                   <Select
                       value={formData.district}
                       onValueChange={(value) => setFormData({ ...formData, district: value })}
                     >
                       <SelectTrigger className="h-12">
-                        <SelectValue placeholder="Stadteil auswählen" />
+                        <SelectValue placeholder={t("binDistrictPlaceholder")} />
                       </SelectTrigger>
 
                       <SelectContent>
@@ -271,11 +273,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="zip" className="flex items-center gap-2">
                     <FileArchive size={16} />
-                    PLZ *
+                    {t("binZipLabel")}
                   </Label>
                   <Input
                       id="zip"
-                      placeholder="PLZ"
+                      placeholder={t("binZipPlaceholder")}
                       value={formData.zip}
                       onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
                       className="h-12"
@@ -285,11 +287,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="city" className="flex items-center gap-2">
                     <Building2 size={16} />
-                    Stadt *
+                    {t("binCityLabel")}
                   </Label>
                   <Input
                       id="city"
-                      placeholder="Stadt"
+                      placeholder={t("binCityPlaceholder")}
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       className="h-12"
@@ -299,11 +301,11 @@ export const AddTrashBin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="latitude" className="flex items-center gap-2">
                     <MapPin size={16} />
-                    Latitude *
+                    {t("binLatitudeLabel")}
                   </Label>
                   <Input
                       id="latitude"
-                      placeholder="Latitude"
+                      placeholder={t("binLatitudePlaceholder")}
                       value={formData.latitude}
                       onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
                       className="h-12"
@@ -313,11 +315,11 @@ export const AddTrashBin = () => {
                   <Label htmlFor="longitude" className="flex items-center gap-2">
 
                     <MapPin size={16} />
-                    Longitude *
+                    {t("binLongitudeLabel")}
                    </Label>
                   <Input
                       id="longitude"
-                      placeholder="Longitude"
+                      placeholder={t("binLongitudePlaceholder")}
                       value={formData.longitude}
                       onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
                       className="h-12"
@@ -332,11 +334,11 @@ export const AddTrashBin = () => {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    <>Processing...</>
+                    <>{t("binSubmitting")}</>
                   ) : (
                     <>
                       <CheckCircle size={18} />
-                      Mülleimer hinzufügen
+                      {t("binAddButton")}
                     </>
                   )}
                 </Button>
