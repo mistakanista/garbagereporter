@@ -13,7 +13,7 @@ services:
   backend:
     build: ./backend
     environment:
-      - BASIC_AUTH_PW=${BASIC_AUTH_PW}
+      - CLIENT=Frankfurt
     env_file:
       - .env
     ports:
