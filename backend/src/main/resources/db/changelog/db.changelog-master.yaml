@@ -157,3 +157,22 @@ databaseChangeLog:
               - column:
                   name: client
                   type: VARCHAR(255)
+  - changeSet:
+      id: 5-add-ai-columns
+      author: gernotschulmeister
+      changes:
+        - addColumn:
+            tableName: report
+            columns:
+              - column:
+                  name: ai_status
+                  type: VARCHAR(255)
+              - column:
+                  name: ai_confidence
+                  type: DECIMAL(10, 2)
+              - column:
+                  name: ai_reason
+                  type: TEXT
+              - column:
+                  name: ai_checked_at
+                  type: TIMESTAMP

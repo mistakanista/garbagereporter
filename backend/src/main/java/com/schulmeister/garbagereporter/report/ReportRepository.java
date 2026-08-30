@@ -10,7 +10,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     Optional<Report> findByTrashbinId(Long trashbinId);
     List<Report> findByClient(String client, Sort sort);
-
-
+    List<Report> findByAiApproved(boolean aiApproved);
 }
 

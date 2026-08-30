@@ -1,5 +1,6 @@
 package com.schulmeister.garbagereporter.report;
 
+import com.schulmeister.garbagereporter.report.ai.AiStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -39,5 +40,15 @@ public class Report {
 
     @Column(nullable = false)
     private LocalDateTime created;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AiStatus aiStatus = AiStatus.PENDING;
+
+    private Double aiConfidence;
+
+    private String aiReason;
+
+    private LocalDateTime aiCheckedAt;
 }
 

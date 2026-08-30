@@ -1,5 +1,8 @@
 package com.schulmeister.garbagereporter.report;
 
+import com.schulmeister.garbagereporter.report.ai.AiReportResult;
+import com.schulmeister.garbagereporter.report.ai.AiReportService;
+import com.schulmeister.garbagereporter.report.ai.AiStatus;
 import com.schulmeister.garbagereporter.trashbin.Trashbin;
 import com.schulmeister.garbagereporter.trashbin.TrashbinRepository;
 import jakarta.validation.Valid;
@@ -34,6 +37,7 @@ public class ReportService {
 
     private ReportRepository repository;
     private TrashbinRepository trashbinRepository;
+    private AiReportService aiService;
 
     public ResponseEntity<String> add(@RequestBody @Valid ReportRequest request) {
         String response;
@@ -111,5 +115,50 @@ public class ReportService {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    public List<Report> checkPendingReports() {
+        log.info("Checking pending reports for AI approval");
+        List<Report> pendingReports = repository.findByAiApproved(false);
+        log.info("Pending reports: {}", pendingReports.size());
+        for (Report report : pendingReports) {
+            try {
+                report.setAiStatus(AiStatus.PROCESSING);
+                repository.save(report);
+
+                AiReportResult result = aiService.analyze(report);
+
+                if (result != null) {
+
+                    report.setAiApproved(result.trashBinDetected() && result.reasonMatches());
+                    report.setAiConfidence(result.confidence());
+                    report.setAiReason(result.explanation());
+                    report.setAiStatus(
+                            report.isAiApproved()
+                                    ? AiStatus.APPROVED
+                                    : AiStatus.REJECTED
+                    );
+                    report.setAiCheckedAt(LocalDateTime.now(ZoneId.of(TIMEZONE)));
+
+                    repository.save(report);
+                }
+
+
+
+            } catch (Exception e) {
+
+                report.setAiStatus(AiStatus.ERROR);
+                repository.save(report);
+
+                log.error(
+                        "AI analysis failed for report {}",
+                        report.getId(),
+                        e
+                );
+            }
+
+            log.info("Report: {}", report);
+        }
+        return pendingReports;
     }
 }

@@ -13,6 +13,7 @@ services:
   backend:
     build: ./backend
     environment:
+      - AI_CRON=0 0 2 * * *
       - CLIENT=Frankfurt
     env_file:
       - .env
