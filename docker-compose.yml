@@ -14,6 +14,7 @@ services:
     build: ./backend
     environment:
       - CLIENT=Hanau
+      - AI_CRON=0 0 2 * * *
     env_file:
       - .env
     ports:

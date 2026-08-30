@@ -1,5 +1,7 @@
 package com.schulmeister.garbagereporter.report;
 
+import com.schulmeister.garbagereporter.report.ai.AiReportService;
+import com.schulmeister.garbagereporter.report.ai.MockAiReportService;
 import com.schulmeister.garbagereporter.trashbin.Trashbin;
 import com.schulmeister.garbagereporter.trashbin.TrashbinRepository;
 import org.junit.jupiter.api.Test;
@@ -19,10 +21,13 @@ import static org.mockito.Mockito.when;
 
 class ReportServiceTest {
 
+    public static final String NEW = "new";
+    public static final String FULL = "voll";
     ReportRepository repository = mock(ReportRepository.class);
     TrashbinRepository trashbinRepository = mock(TrashbinRepository.class);
+    AiReportService aiReportService = new MockAiReportService();
 
-    ReportService reportService = new ReportService(repository, trashbinRepository);
+    ReportService reportService = new ReportService(repository, trashbinRepository, aiReportService);
 
     Long number = 2234L;
     Long id = 4L;
@@ -121,10 +126,36 @@ class ReportServiceTest {
         assertTrue(response.contains(obsolete));
     }
 
+    @Test
+    void reportAiConfirmed() {
+
+        Report report = getReport();
+        when(repository.findByAiApproved(false)).thenReturn(List.of(report));
+        when(repository.save(org.mockito.ArgumentMatchers.any(Report.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        List<Report> reports = reportService.checkPendingReports();
+        assertNotNull(reports);
+        Report updatedReport = reports.getFirst();
+        assertTrue(updatedReport.isAiApproved());
+    }
+
+    @Test
+    void reportAiNotConfirmed() {
+
+        Report report = getReportObsolete();
+        when(repository.findByAiApproved(false)).thenReturn(List.of(report));
+        when(repository.save(org.mockito.ArgumentMatchers.any(Report.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        List<Report> reports = reportService.checkPendingReports();
+        assertNotNull(reports);
+        Report updatedReport = reports.getFirst();
+        assertFalse(updatedReport.isAiApproved());
+    }
+
     private ReportRequest getReportRequest() {
         return ReportRequest.builder()
                 .trashbinId(number)
-                .type("voll")
+                .type(FULL)
                 .description("Der Mülleimer ist schon seit 1 Woche voll")
                 .image("2234.jpg")
                 .build();
@@ -148,7 +179,17 @@ class ReportServiceTest {
         Report report = new Report();
         report.setId(id);
         report.setTrashbinId(number);
-        report.setType("voll");
+        report.setType(FULL);
+        report.setStatus(NEW);
+        return report;
+    }
+
+    private Report getReportObsolete() {
+        Report report = new Report();
+        report.setId(id);
+        report.setTrashbinId(number);
+        report.setType(FULL);
+        report.setStatus(obsolete);
         return report;
     }
 

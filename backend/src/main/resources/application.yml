@@ -10,6 +10,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  profiles:
+    active: mock-ai
   web:
     resources:
       static-locations: file:/app/uploads/
@@ -29,6 +31,10 @@ spring:
 
 server:
   port: 8010
+
+garbage-reporter:
+  ai:
+    cron: ${AI_CRON:0 0 2 * * *}
 
 logging:
   level:
