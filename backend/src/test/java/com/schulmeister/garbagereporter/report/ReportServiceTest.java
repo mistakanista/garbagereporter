@@ -21,8 +21,9 @@ import static org.mockito.Mockito.when;
 
 class ReportServiceTest {
 
-    public static final String NEW = "new";
+    public static final String NEW = Status.NEW.getStatusValue();
     public static final String FULL = "voll";
+    public static final String OBSOLETE = Status.OBSOLETE.getStatusValue();
     ReportRepository repository = mock(ReportRepository.class);
     TrashbinRepository trashbinRepository = mock(TrashbinRepository.class);
     AiReportService aiReportService = new MockAiReportService();
@@ -31,7 +32,7 @@ class ReportServiceTest {
 
     Long number = 2234L;
     Long id = 4L;
-    String obsolete = "obsolete";
+
 
     @Test
     void reportAdded() {
@@ -123,14 +124,14 @@ class ReportServiceTest {
         assertNotNull(response);
         assertNotEquals("", response);
         assertTrue(response.contains(STATUS_UPDATED));
-        assertTrue(response.contains(obsolete));
+        assertTrue(response.contains(OBSOLETE));
     }
 
     @Test
     void reportAiConfirmed() {
 
         Report report = getReport();
-        when(repository.findByAiApproved(false)).thenReturn(List.of(report));
+        when(repository.findByStatus(Status.NEW.getStatusValue())).thenReturn(List.of(report));
         when(repository.save(org.mockito.ArgumentMatchers.any(Report.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         List<Report> reports = reportService.checkPendingReports();
@@ -143,7 +144,7 @@ class ReportServiceTest {
     void reportAiNotConfirmed() {
 
         Report report = getReportObsolete();
-        when(repository.findByAiApproved(false)).thenReturn(List.of(report));
+        when(repository.findByStatus(Status.NEW.getStatusValue())).thenReturn(List.of(report));
         when(repository.save(org.mockito.ArgumentMatchers.any(Report.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         List<Report> reports = reportService.checkPendingReports();
@@ -164,7 +165,7 @@ class ReportServiceTest {
     private ReportStatusUpdateRequest getReportUpdateRequest() {
         ReportStatusUpdateRequest reportUpdateRequest = new ReportStatusUpdateRequest();
         reportUpdateRequest.setId(id);
-        reportUpdateRequest.setStatus(obsolete);
+        reportUpdateRequest.setStatus(OBSOLETE);
         return reportUpdateRequest;
     }
 
@@ -189,7 +190,7 @@ class ReportServiceTest {
         report.setId(id);
         report.setTrashbinId(number);
         report.setType(FULL);
-        report.setStatus(obsolete);
+        report.setStatus(OBSOLETE);
         return report;
     }
 

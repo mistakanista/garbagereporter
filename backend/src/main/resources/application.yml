@@ -1,4 +1,21 @@
 spring:
+  ai:
+    model:
+      chat: bedrock-converse
+    bedrock:
+      aws:
+        region: ${AWS_REGION:eu-central-1}
+        timeout: 15m
+        connection-timeout: 15s
+        connection-acquisition-timeout: 30s
+        async-read-timeout: 180s
+        socket-timeout: 300s
+        max-retries: 5
+      converse:
+        chat:
+          model: arn:aws:bedrock:eu-central-1:495526667185:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0
+          temperature: 0.2
+          max-tokens: 32000
   servlet:
     multipart:
       max-file-size: 10MB
@@ -11,7 +28,7 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
   profiles:
-    active: mock-ai
+    active: bedrock
   web:
     resources:
       static-locations: file:/app/uploads/

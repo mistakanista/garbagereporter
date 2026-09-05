@@ -119,7 +119,7 @@ public class ReportService {
 
     public List<Report> checkPendingReports() {
         log.info("Checking pending reports for AI approval");
-        List<Report> pendingReports = repository.findByAiApproved(false);
+        List<Report> pendingReports = repository.findByStatus(Status.NEW.getStatusValue());
         log.info("Pending reports: {}", pendingReports.size());
         for (Report report : pendingReports) {
             try {
@@ -127,6 +127,7 @@ public class ReportService {
                 repository.save(report);
 
                 AiReportResult result = aiService.analyze(report);
+                log.info("AI analysis result for report {}: {}", report.getId(), result);
 
                 if (result != null) {
 
@@ -139,6 +140,11 @@ public class ReportService {
                                     : AiStatus.REJECTED
                     );
                     report.setAiCheckedAt(LocalDateTime.now(ZoneId.of(TIMEZONE)));
+                    if (report.isAiApproved()) {
+                        report.setStatus(Status.CONFIRMED.getStatusValue());
+                    } else {
+                        report.setStatus(Status.OBSOLETE.getStatusValue());
+                    }
 
                     repository.save(report);
                 }
