@@ -44,24 +44,24 @@ public class BedrockAiReportService implements AiReportService {
         }
 
         String prompt = """
-                Auf dem Bild soll überprüft werden, ob die Meldung eines Bürgers plausibel ist.
-                
-                Meldegrund:
-                {TYPE}
-                
-                Prüfe:
-                
-                - Ist ein öffentlicher Mülleimer erkennbar?
-                - Ist der angegebene Meldegrund auf dem Foto erkennbar?
-                - Wie sicher ist die Einschätzung?
-                
-                Regeln:
-                
-                - Wenn kein Mülleimer erkennbar ist: trashBinDetected=false.
-                - Wenn der Meldegrund nicht eindeutig erkennbar ist: reasonMatches=false.
-                - Bei schlechter Bildqualität keine positive Bewertung erzwingen.
-                - confidence ist eine Zahl zwischen 0 und 1.
-                - Bewerte ausschließlich sichtbare Informationen.
+                The image is to be used to verify whether a citizen's report is plausible.
+            
+                    Reason for report:
+                    %s
+            
+                    Check:
+            
+                    - Is a public trash can visible?
+                    - Is the reported issue visible in the photo?
+                    - How certain is the assessment?
+            
+                    Rules:
+            
+                    - If no trash can is visible: trashBinDetected=false.
+                    - If the reported issue is not clearly identifiable: reasonMatches=false.
+                    - Do not force a positive rating if image quality is poor.
+                    - confidence is a number between 0 and 1.
+                    - Evaluate based solely on visible information.
             """.formatted(report.getType());
 
 
