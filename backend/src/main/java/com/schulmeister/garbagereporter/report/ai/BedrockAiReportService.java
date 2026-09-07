@@ -119,7 +119,6 @@ public class BedrockAiReportService implements AiReportService {
                 (double) maxHeight / originalImage.getHeight()
         );
 
-        // Bereits klein genug
         if (scale >= 1.0) {
             return original;
         }
