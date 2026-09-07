@@ -15,6 +15,7 @@ services:
     environment:
       - AI_CRON=0 0 2 * * *
       - CLIENT=Frankfurt
+      - PROFILE=bedrock
     env_file:
       - .env
     ports:
