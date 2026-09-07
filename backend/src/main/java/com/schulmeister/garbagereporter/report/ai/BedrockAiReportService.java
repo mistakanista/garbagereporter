@@ -2,6 +2,7 @@ package com.schulmeister.garbagereporter.report.ai;
 
 import com.schulmeister.garbagereporter.report.Report;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
 import org.springframework.context.annotation.Profile;
@@ -31,21 +32,10 @@ public class BedrockAiReportService implements AiReportService {
     public AiReportResult analyze(Report report) {
         log.info("Profile: Bedrock");
 
-        Path imagePath = Path.of(
-                "/app/uploads/reports/",
-                report.getImage()
-        );
-
-        if (!Files.isRegularFile(imagePath) || !Files.isReadable(imagePath)) {
-            String error = "Image does not exist or is not readable: " + imagePath;
-            log.error(error);
-            throw new IllegalStateException(
-                    error
-            );
-        }
+        Path smallImage = createSmallTempImage(report);
 
         String prompt = """
-                The image is to be used to verify whether a citizen's report is plausible.
+                The image is to be used to verify whether a citizen's trash bin report is plausible.
             
                     Reason for report:
                     %s
@@ -64,19 +54,6 @@ public class BedrockAiReportService implements AiReportService {
                     - confidence is a number between 0 and 1.
                     - Evaluate based solely on visible information.
             """.formatted(report.getType());
-
-
-        Path smallImage;
-        try {
-            smallImage = createAiImage(imagePath, report.getImage());
-        } catch (IOException e) {
-            log.error("Failed to create AI image: {}", e.getMessage());
-            throw new IllegalStateException(
-                    "Failed to create AI image: " + e.getMessage(),
-                    e
-            );
-        }
-
 
         Path aiImage = smallImage;
         try {
@@ -108,6 +85,31 @@ public class BedrockAiReportService implements AiReportService {
         return null;
     }
 
+    private @NonNull Path createSmallTempImage(Report report) {
+        Path imagePath = Path.of(
+                "/app/uploads/reports/",
+                report.getImage()
+        );
+
+        if (!Files.isRegularFile(imagePath) || !Files.isReadable(imagePath)) {
+            String error = "Image does not exist or is not readable: " + imagePath;
+            log.error(error);
+            throw new IllegalStateException(error);
+        }
+
+        Path smallImage;
+        try {
+            smallImage = resizeImage(imagePath, report.getImage());
+        } catch (IOException e) {
+            log.error("Failed to create AI image: {}", e.getMessage());
+            throw new IllegalStateException(
+                    "Failed to create AI image: " + e.getMessage(),
+                    e
+            );
+        }
+        return smallImage;
+    }
+
     private String getExtension(String filename) {
         int index = filename.lastIndexOf('.');
         return index >= 0
@@ -115,7 +117,7 @@ public class BedrockAiReportService implements AiReportService {
                 : "jpeg";
     }
 
-    private Path createAiImage(Path original, String imageName) throws IOException {
+    private Path resizeImage(Path original, String imageName) throws IOException {
         BufferedImage originalImage = ImageIO.read(original.toFile());
 
         if (originalImage == null) {
