@@ -81,7 +81,6 @@ public class ReportService {
                 Sort.by(Sort.Direction.DESC, "created")
         );
         log.info("client: {}", CLIENT);
-        log.info("reportList: {}", reportList);
         List<Trashbin> trashbinList = trashbinRepository.findByClient(CLIENT);
         for (Report report : reportList) {
             trashbinList.stream().filter(trashbin -> trashbin.getNumber().equals(report.getTrashbinId()))
