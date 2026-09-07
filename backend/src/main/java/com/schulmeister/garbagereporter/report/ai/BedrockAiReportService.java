@@ -29,6 +29,7 @@ public class BedrockAiReportService implements AiReportService {
 
     @Override
     public AiReportResult analyze(Report report) {
+        log.info("Profile: Bedrock");
 
         Path imagePath = Path.of(
                 "/app/uploads/reports/",
@@ -67,7 +68,7 @@ public class BedrockAiReportService implements AiReportService {
 
         Path smallImage;
         try {
-            smallImage = createAiImage(imagePath);
+            smallImage = createAiImage(imagePath, report.getImage());
         } catch (IOException e) {
             log.error("Failed to create AI image: {}", e.getMessage());
             throw new IllegalStateException(
@@ -78,23 +79,33 @@ public class BedrockAiReportService implements AiReportService {
 
 
         Path aiImage = smallImage;
-        return chatClient
+        try {
+            return chatClient
                 .prompt()
                 .user(user -> user
-                        .text(prompt)
-                        .media(
-                                new Media(
-                                        MimeType.valueOf(
-                                                "image/" + getExtension(report.getImage())
-                                        ),
-                                        new FileSystemResource(aiImage)
-                                )
+                    .text(prompt)
+                    .media(
+                        new Media(
+                            MimeType.valueOf(
+                                    "image/" + getExtension(report.getImage())
+                            ),
+                            new FileSystemResource(aiImage)
                         )
+                    )
                 )
                 .call()
                 .entity(AiReportResult.class);
 
-
+        } catch (Exception e) {
+            log.error("Error when analyzing image {} by AI: {}", report.getImage(), e.getMessage());
+        } finally {
+            try {
+                Files.deleteIfExists(aiImage);
+            } catch (IOException e) {
+                log.warn("Failed to delete temporary AI image: {}", e.getMessage());
+            }
+        }
+        return null;
     }
 
     private String getExtension(String filename) {
@@ -104,7 +115,7 @@ public class BedrockAiReportService implements AiReportService {
                 : "jpeg";
     }
 
-    private Path createAiImage(Path original) throws IOException {
+    private Path createAiImage(Path original, String imageName) throws IOException {
         BufferedImage originalImage = ImageIO.read(original.toFile());
 
         if (originalImage == null) {
@@ -138,7 +149,7 @@ public class BedrockAiReportService implements AiReportService {
 
         Path aiImage = Files.createTempFile("ai-", ".jpeg");
 
-        ImageIO.write(resized, "jpeg", aiImage.toFile());
+        ImageIO.write(resized, getExtension(imageName), aiImage.toFile());
 
         return aiImage;
     }

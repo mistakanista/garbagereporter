@@ -28,23 +28,10 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
   profiles:
-    active: bedrock
+    active: ${PROFILE:mock-ai}
   web:
     resources:
       static-locations: file:/app/uploads/
-  mvc:
-    static-path-pattern: /**
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${EMAIL}
-    password: ${EMAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 server:
   port: 8010

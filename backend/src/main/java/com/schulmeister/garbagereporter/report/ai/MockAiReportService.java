@@ -1,16 +1,18 @@
 package com.schulmeister.garbagereporter.report.ai;
 
 import com.schulmeister.garbagereporter.report.Report;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @Profile("mock-ai")
+@Slf4j
 public class MockAiReportService implements AiReportService {
 
     @Override
     public AiReportResult analyze(Report report) {
-
+        log.info("Profile: Mock-AI");
         if ("new".equals(report.getStatus())) {
             return new AiReportResult(
                     true,
