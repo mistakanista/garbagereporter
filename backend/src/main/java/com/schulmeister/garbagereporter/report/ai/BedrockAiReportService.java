@@ -75,12 +75,6 @@ public class BedrockAiReportService implements AiReportService {
 
         } catch (Exception e) {
             log.error("Error when analyzing image {} by AI: {}", report.getImage(), e.getMessage());
-        } finally {
-            try {
-                Files.deleteIfExists(aiImage);
-            } catch (IOException e) {
-                log.warn("Failed to delete temporary AI image: {}", e.getMessage());
-            }
         }
         return null;
     }
