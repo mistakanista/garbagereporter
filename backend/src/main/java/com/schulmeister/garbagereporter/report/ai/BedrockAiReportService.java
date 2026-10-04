@@ -2,7 +2,6 @@ package com.schulmeister.garbagereporter.report.ai;
 
 import com.schulmeister.garbagereporter.report.Report;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
 import org.springframework.context.annotation.Profile;
@@ -10,9 +9,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,7 +29,7 @@ public class BedrockAiReportService implements AiReportService {
     public AiReportResult analyze(Report report) {
         log.info("Profile: Bedrock");
 
-        Path smallImage = createSmallTempImage(report);
+        Path smallImage = ImageResizer.createSmallTempImage(report.getImage());
 
         String prompt = """
                 The image is to be used to verify whether a citizen's trash bin report is plausible.
@@ -55,7 +52,6 @@ public class BedrockAiReportService implements AiReportService {
                     - Evaluate based solely on visible information.
             """.formatted(report.getType());
 
-        Path aiImage = smallImage;
         try {
             return chatClient
                 .prompt()
@@ -64,9 +60,9 @@ public class BedrockAiReportService implements AiReportService {
                     .media(
                         new Media(
                             MimeType.valueOf(
-                                    "image/" + getExtension(report.getImage())
+                                    "image/" + ImageResizer.getExtension(report.getImage())
                             ),
-                            new FileSystemResource(aiImage)
+                            new FileSystemResource(smallImage)
                         )
                     )
                 )
@@ -75,78 +71,16 @@ public class BedrockAiReportService implements AiReportService {
 
         } catch (Exception e) {
             log.error("Error when analyzing image {} by AI: {}", report.getImage(), e.getMessage());
+        } finally {
+            try {
+                if (ImageResizer.imageNeedsResize(report.getImage())) {
+                    log.info("Deleting temporary AI image: {}", smallImage);
+                    Files.deleteIfExists(smallImage);
+                }
+            } catch (IOException e) {
+                log.warn("Failed to delete temporary AI image: {}", e.getMessage());
+            }
         }
         return null;
-    }
-
-    private @NonNull Path createSmallTempImage(Report report) {
-        Path imagePath = Path.of(
-                "/app/uploads/reports/",
-                report.getImage()
-        );
-
-        if (!Files.isRegularFile(imagePath) || !Files.isReadable(imagePath)) {
-            String error = "Image does not exist or is not readable: " + imagePath;
-            log.error(error);
-            throw new IllegalStateException(error);
-        }
-
-        Path smallImage;
-        try {
-            smallImage = resizeImage(imagePath, report.getImage());
-        } catch (IOException e) {
-            log.error("Failed to create AI image: {}", e.getMessage());
-            throw new IllegalStateException(
-                    "Failed to create AI image: " + e.getMessage(),
-                    e
-            );
-        }
-        return smallImage;
-    }
-
-    private String getExtension(String filename) {
-        int index = filename.lastIndexOf('.');
-        return index >= 0
-                ? filename.substring(index + 1).toLowerCase()
-                : "jpeg";
-    }
-
-    private Path resizeImage(Path original, String imageName) throws IOException {
-        BufferedImage originalImage = ImageIO.read(original.toFile());
-
-        if (originalImage == null) {
-            throw new IOException("Could not read image: " + original);
-        }
-
-        int maxWidth = 1600;
-        int maxHeight = 1600;
-
-        double scale = Math.min(
-                (double) maxWidth / originalImage.getWidth(),
-                (double) maxHeight / originalImage.getHeight()
-        );
-
-        if (scale >= 1.0) {
-            return original;
-        }
-
-        int width = (int) Math.round(originalImage.getWidth() * scale);
-        int height = (int) Math.round(originalImage.getHeight() * scale);
-
-        BufferedImage resized = new BufferedImage(
-                width,
-                height,
-                BufferedImage.TYPE_INT_RGB
-        );
-
-        Graphics2D graphics = resized.createGraphics();
-        graphics.drawImage(originalImage, 0, 0, width, height, null);
-        graphics.dispose();
-
-        Path aiImage = Files.createTempFile("ai-", ".jpeg");
-
-        ImageIO.write(resized, getExtension(imageName), aiImage.toFile());
-
-        return aiImage;
     }
 }
