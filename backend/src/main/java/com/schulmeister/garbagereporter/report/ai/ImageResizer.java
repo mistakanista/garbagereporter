@@ -57,11 +57,14 @@ public class ImageResizer {
 
     public static Path createAiImage(Path original) throws IOException {
         BufferedImage originalImage = getBufferedImage(original);
-
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
         double scale = getScale(originalImage);
 
-        int width = (int) Math.round(originalImage.getWidth() * scale);
-        int height = (int) Math.round(originalImage.getHeight() * scale);
+        if (scale < 1.0) {
+            width = (int) Math.round(originalImage.getWidth() * scale);
+            height = (int) Math.round(originalImage.getHeight() * scale);
+        }
 
         BufferedImage resized = new BufferedImage(
                 width,
