@@ -60,7 +60,7 @@ public class BedrockAiReportService implements AiReportService {
                     .media(
                         new Media(
                             MimeType.valueOf(
-                                    "image/" + ImageResizer.getExtension(report.getImage())
+                                    "image/" + ImageResizer.AI_IMAGE_FORMAT
                             ),
                             new FileSystemResource(smallImage)
                         )
@@ -73,10 +73,7 @@ public class BedrockAiReportService implements AiReportService {
             log.error("Error when analyzing image {} by AI: {}", report.getImage(), e.getMessage());
         } finally {
             try {
-                if (ImageResizer.imageNeedsResize(report.getImage())) {
-                    log.info("Deleting temporary AI image: {}", smallImage);
-                    Files.deleteIfExists(smallImage);
-                }
+                Files.deleteIfExists(smallImage);
             } catch (IOException e) {
                 log.warn("Failed to delete temporary AI image: {}", e.getMessage());
             }

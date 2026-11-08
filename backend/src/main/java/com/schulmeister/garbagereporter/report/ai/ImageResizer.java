@@ -12,6 +12,10 @@ import java.nio.file.Path;
 
 @Slf4j
 public class ImageResizer {
+
+    public static final String AI_IMAGE_FORMAT = "jpeg";
+    public static final String UPLOADS_DIR = "/app/uploads/reports/";
+
     private ImageResizer() {
         /* This utility class should not be instantiated */
     }
@@ -22,7 +26,7 @@ public class ImageResizer {
 
         Path smallImage;
         try {
-            smallImage = resizeImage(imagePath, image);
+            smallImage = createAiImage(imagePath);
         } catch (IOException e) {
             log.error("Failed to create AI image: {}", e.getMessage());
             throw new IllegalStateException(
@@ -34,10 +38,14 @@ public class ImageResizer {
     }
 
     public static @NonNull Path getPath(String image) {
-        Path imagePath = Path.of(
-                "/app/uploads/reports/",
+        return Path.of(
+                UPLOADS_DIR,
                 image
         );
+    }
+
+    public static @NonNull Path resolvePath(Path uploadDirectory, String image) {
+        Path imagePath = uploadDirectory.resolve(image);
 
         if (!Files.isRegularFile(imagePath) || !Files.isReadable(imagePath)) {
             String error = "Image does not exist or is not readable: " + imagePath;
@@ -47,21 +55,10 @@ public class ImageResizer {
         return imagePath;
     }
 
-    public static String getExtension(String filename) {
-        int index = filename.lastIndexOf('.');
-        return index >= 0
-                ? filename.substring(index + 1).toLowerCase()
-                : "jpeg";
-    }
-
-    public static Path resizeImage(Path original, String imageName) throws IOException {
+    public static Path createAiImage(Path original) throws IOException {
         BufferedImage originalImage = getBufferedImage(original);
 
         double scale = getScale(originalImage);
-
-        if (scale >= 1.0) {
-            return original;
-        }
 
         int width = (int) Math.round(originalImage.getWidth() * scale);
         int height = (int) Math.round(originalImage.getHeight() * scale);
@@ -76,10 +73,10 @@ public class ImageResizer {
         graphics.drawImage(originalImage, 0, 0, width, height, null);
         graphics.dispose();
 
-        Path aiImage = Files.createTempFile("ai-", ".jpeg");
+        Path aiImage = Files.createTempFile("ai-", "." + AI_IMAGE_FORMAT);
 
-        ImageIO.write(resized, getExtension(imageName), aiImage.toFile());
-
+        ImageIO.write(resized, AI_IMAGE_FORMAT, aiImage.toFile());
+        log.info("Created AI image {}", aiImage);
         return aiImage;
     }
 
@@ -100,22 +97,5 @@ public class ImageResizer {
                 (double) maxWidth / originalImage.getWidth(),
                 (double) maxHeight / originalImage.getHeight()
         );
-    }
-
-    public static boolean imageNeedsResize(String image) {
-        Path imagePath = getPath(image);
-
-        try {
-            BufferedImage originalImage = getBufferedImage(imagePath);
-            double scale = getScale(originalImage);
-            log.info("Image {} scale: {}", image, scale);
-            return scale < 1.0;
-        } catch (IOException e) {
-            log.error("Failed to get scale of image: {}", e.getMessage());
-            throw new IllegalStateException(
-                    "Failed to get scale of image: " + e.getMessage(),
-                    e
-            );
-        }
     }
 }
