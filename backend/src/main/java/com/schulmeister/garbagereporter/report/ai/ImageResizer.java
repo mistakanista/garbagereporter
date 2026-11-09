@@ -22,26 +22,16 @@ public class ImageResizer {
 
 
     public static @NonNull Path createSmallTempImage(String image) {
-        Path imagePath = getPath(image);
+        Path imagePath = resolvePath(Path.of(UPLOADS_DIR), image);
 
         Path smallImage;
         try {
             smallImage = createAiImage(imagePath);
         } catch (IOException e) {
             log.error("Failed to create AI image: {}", e.getMessage());
-            throw new IllegalStateException(
-                    "Failed to create AI image: " + e.getMessage(),
-                    e
-            );
+            throw new IllegalStateException("Failed to create AI image: " + e.getMessage(), e);
         }
         return smallImage;
-    }
-
-    public static @NonNull Path getPath(String image) {
-        return Path.of(
-                UPLOADS_DIR,
-                image
-        );
     }
 
     public static @NonNull Path resolvePath(Path uploadDirectory, String image) {

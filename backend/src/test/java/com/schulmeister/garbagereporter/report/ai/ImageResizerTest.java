@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import static com.schulmeister.garbagereporter.report.ai.ImageResizer.UPLOADS_DIR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -17,14 +16,6 @@ class ImageResizerTest {
 
     @TempDir
     Path tempDir;
-
-    @Test
-    @DisplayName("getStaticPath: gets the static path")
-    void getStaticPath() {
-        Path path = ImageResizer.getPath("test.jpg");
-
-        assertThat(path).isEqualTo(Path.of(UPLOADS_DIR + "/test.jpg"));
-    }
 
     @Test
     @DisplayName("resolvePath: existing readable image returns path")
