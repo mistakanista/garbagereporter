@@ -30,10 +30,7 @@ public class BedrockAiConfig {
   }
 
   /**
-   * Shared synchronous Bedrock runtime client used by both the chat model (picked up by Spring AI's
-   * Bedrock Converse autoconfiguration) and the embedding model. Configured with {@link
-   * RetryMode#ADAPTIVE} so parallel per-module requirements generation degrades gracefully under
-   * Bedrock throttling instead of failing fast.
+   * Bedrock runtime client for the chat model
    */
   @Bean
   @Primary

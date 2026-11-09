@@ -15,7 +15,7 @@ services:
     environment:
       - CLIENT=Hanau
       - AI_CRON=0 0 2 * * *
-      - PROFILE=mock-ai
+      - PROFILE=bedrock
     env_file:
       - .env
     ports:
